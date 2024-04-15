@@ -3,10 +3,10 @@ import React from 'react'
 
 const Navigation = () => {
     return (
-    <div className='w-full bg-slate-700 backdrop-blur-sm bg-opacity-10 fixed z-50'>
+    <div className='w-full bg-slate-900 backdrop-blur-sm bg-opacity-70 fixed z-50'>
         <nav className="flex flex-wrap items-center justify-between p-4 mx-16">
             <div className="w-auto flex justify-center lg:order-2 lg:w-1/5 lg:text-center">
-                <img src={'./Logo.png'} />
+                <img className='w-28' src={'./Logo.png'} />
             </div>
             <div className="block lg:hidden">
                 <button className="flex items-center px-3 py-2 text-indigo-500 border border-indigo-500 rounded navbar-burger">
@@ -37,8 +37,8 @@ const Navigation = () => {
                 <Link className="block mt-4 mr-10 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Manual">
                     Manual
                 </Link>
-                <Link className="block mt-4 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Contact">
-                    Contact
+                <Link className="block mt-4 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Connection">
+                    Connection
                 </Link>
             </div>
         </nav>

@@ -1,8 +1,19 @@
+'use client'
 import React, { useEffect, useState } from 'react';
 import { Card, List } from 'antd';
 
-const Receiver = ({ payload }) => {
-  const [messages, setMessages] = useState([])
+interface Payload {
+  topic: string;
+  message: string;
+}
+
+
+interface ReceiverProps {
+  payload: Payload;
+}
+
+const Receiver : React.FC<ReceiverProps> = ({ payload }) => {
+  const [messages, setMessages] = useState<Payload[]>([])
 
   useEffect(() => {
     if (payload.topic) {
@@ -10,7 +21,7 @@ const Receiver = ({ payload }) => {
     }
   }, [payload])
 
-  const renderListItem = (item) => (
+  const renderListItem = (item:Payload) => (
     <List.Item>
       <List.Item.Meta
         title={item.topic}

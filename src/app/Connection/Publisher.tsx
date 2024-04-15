@@ -1,17 +1,23 @@
+'use client'
 import React, { useContext } from 'react';
 import { Card, Form, Input, Row, Col, Button, Select } from 'antd';
 import { QosOption } from './page'
 
-const Publisher = ({ publish }) => {
+interface PublisherProps {
+  publish: Function;
+}
+
+const Publisher : React.FC<PublisherProps> = ({ publish }) => {
   const [form] = Form.useForm();
   const qosOptions = useContext(QosOption);
 
+  // topic, QoS for publishing message
   const record = {
-    topic: 'testtopic/react',
+    topic: 'amrcontrol',
     qos: 0,
   };
 
-  const onFinish = (values) => {
+  const onFinish = (values:any) => {
     publish(values)
   };
 
