@@ -1,7 +1,8 @@
 'use client'
 import React, { useState } from 'react'
 import './grid_styles.css'
-import { CircularInput, CircularProgress, CircularThumb, CircularTrack } from 'react-circular-input';
+import LeftNav from '../Components/LeftNav';
+import RightNav from '../Components/RightNav';
 interface GridProps {
     rows: number;
     cols: number;
@@ -29,7 +30,7 @@ const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, d
         setRequestPosition([x, y])
         const xpos = Math.abs(x) >= 100 ? `${x}` : Math.abs(x) >= 10 ? `0${x}` : `00${x}`
         const ypos = Math.abs(y) >= 100 ? `${y}` : Math.abs(y) >= 10 ? `0${y}` : `00${y}`
-        const ori = Math.abs(requestOrientation) >= 100 ? `${requestOrientation}` : Math.abs(requestOrientation) >= 10 ? `0${requestOrientation}` : `00${requestOrientation}`
+        const ori = Math.abs(Math.round(requestOrientation*360)) >= 100 ? `${Math.abs(Math.round(requestOrientation*360))}` : Math.abs(Math.round(requestOrientation*360)) >= 10 ? `0${Math.abs(Math.round(requestOrientation*360))}` : `00${Math.abs(Math.round(requestOrientation*360))}`
         const msg = `AA${x >= 0 ? 'P' : 'N'}${xpos}${y >= 0 ? 'P' : 'N'}${ypos}O${ori}`
         mqttPublish(msg)
     }
@@ -148,33 +149,9 @@ const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, d
                 </div>
             </div>
 
-            {/* Orientation */}
-            <div className='flex justify-between items-center mt-8 '>
-                <div className='flex flex-col justify-center items-center gap-y-5'>
-                    <p className='mx-1 my-2 text-xs font-mono'>Current Orientation</p>
-                    <CircularInput value={currentOrientation}>
-                        <CircularTrack strokeWidth={1} />
-                        <CircularThumb r={10} />
-                        <text x={100} y={100} fill='white' textAnchor="middle" dy="0.3em" fontWeight="bold">
-                            {Math.round(currentOrientation * 360)}°
-                        </text>
-                    </CircularInput>
-                </div>
-                <div className='flex flex-col items-center justify-center'>
-                    <img style={{ transform: `rotate(${Math.round(currentOrientation * 360)}deg)`, transformOrigin: 'center' }} className={`w-48`} src={'./Crank.png'} />
-                </div>
+            <LeftNav currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
+            <RightNav currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
 
-                <div className='flex flex-col justify-center items-center gap-y-5'>
-                    <p className='mx-1 my-2 text-xs font-mono'>Request Orientation</p>
-                    <CircularInput value={requestOrientation} onChange={setRequestOrientation}>
-                        <CircularTrack strokeWidth={1} />
-                        <CircularThumb r={10} />
-                        <text x={100} y={100} fill='white' textAnchor="middle" dy="0.3em" fontWeight="bold">
-                            {Math.round(requestOrientation * 360)}°
-                        </text>
-                    </CircularInput>
-                </div>
-            </div>
         </div>
     );
 };

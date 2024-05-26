@@ -13,7 +13,7 @@ const Publisher : React.FC<PublisherProps> = ({ publish }) => {
 
   // topic, QoS for publishing message
   const record = {
-    topic: 'amrcontrol',
+    topic: 'astar',
     qos: 0,
   };
 

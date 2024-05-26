@@ -2,6 +2,8 @@
 import React, { useState, useEffect } from 'react'
 import Grid from './Grid'
 import mqtt, { MqttClient } from 'mqtt'
+import LeftNav from '../Components/LeftNav'
+import RightNav from '../Components/RightNav'
 
 const Calibration = () => {
   const [currentPosition, setCurrentPosition] = useState([10, 25])
@@ -76,11 +78,14 @@ const Calibration = () => {
   const mqttPublish = (payloadMsg:string) => {
     if (client) {
       // topic, QoS & payload for publishing message
-      const topic = 'amrcontrol'
+      const topic = 'astar/amrcommands'
       const qosOption = 0
       client.publish(topic, payloadMsg, { qos: qosOption }, (error) => {
         if (error) {
           console.log('Publish error: ', error)
+        }
+        else{
+          console.log('Publish to: ', topic)
         }
       })
       setTxMsg(payloadMsg);
@@ -90,12 +95,12 @@ const Calibration = () => {
   const mqttSub = () => {
     if (client) {
 
-      client.subscribe('amrcontrol', { qos: 0 }, (error) => {
+      client.subscribe('astar/amrparams', { qos: 0 }, (error) => {
         if (error) {
           console.log('Subscribe to topics error', error)
           return
         }
-        console.log(`Subscribe to topics: amrcontrol`)
+        console.log(`Subscribe to topics: astar/amrparams`)
         setIsSub(true)
       })
     }
@@ -103,12 +108,12 @@ const Calibration = () => {
 
   const mqttUnSub = () => {
     if (client) {
-      client.unsubscribe('amrcontrol', { qos: 0 }, (error) => {
+      client.unsubscribe('astar/amrparams', { qos: 0 }, (error) => {
         if (error) {
           console.log('Unsubscribe error', error)
           return
         }
-        console.log(`unsubscribed topic: amrcontrol`)
+        console.log(`unsubscribed topic: astar/amrparams`)
         setIsSub(false)
       })
     }

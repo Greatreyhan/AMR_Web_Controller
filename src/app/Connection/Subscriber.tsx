@@ -15,7 +15,7 @@ const Subscriber : React.FC<SubscriberProps> = ({ sub, unSub, showUnsub }) => {
 
   // topic & QoS for MQTT subscribing
   const record = {
-    topic: 'amrcontrol',
+    topic: 'astar',
     qos: 0,
   }
 
