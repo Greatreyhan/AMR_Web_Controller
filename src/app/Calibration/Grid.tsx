@@ -16,6 +16,7 @@ interface GridProps {
 const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, dataKinematika, dataEnvironment, rxMsg }) => {
     const [requestPosition, setRequestPosition] = useState(currentPosition)
     const [hover, setHover] = useState([0, 0])
+    const [step, setStep] = useState(0)
     const [requestOrientation, setRequestOrientation] = useState(0)
     const [currentOrientation, setCurrentOrientation] = useState(0)
 
@@ -32,9 +33,10 @@ const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, d
         const xpos = Math.abs(x) >= 100 ? `${x}` : Math.abs(x) >= 10 ? `0${x}` : `00${x}`
         const ypos = Math.abs(y) >= 100 ? `${y}` : Math.abs(y) >= 10 ? `0${y}` : `00${y}`
         const ori = Math.abs(Math.round(requestOrientation*360)) >= 100 ? `${Math.abs(Math.round(requestOrientation*360))}` : Math.abs(Math.round(requestOrientation*360)) >= 10 ? `0${Math.abs(Math.round(requestOrientation*360))}` : `00${Math.abs(Math.round(requestOrientation*360))}`
-        const step = '001'
-        const msg = `AA${x >= 0 ? 'P' : 'N'}${xpos}${y >= 0 ? 'P' : 'N'}${ypos}O${ori}S${step}`
+        const stepMsg = Math.abs(step) >= 100 ? `${step}` : Math.abs(step) >= 10 ? `0${step}` : `00${step}`
+        const msg = `AA${x >= 0 ? 'P' : 'N'}${xpos}${y >= 0 ? 'P' : 'N'}${ypos}O${ori}S${stepMsg}`
         mqttPublish(msg)
+        setStep(step+1)
     }
 
     const handleHoverData = (x: number, y: number) => {
