@@ -5,48 +5,61 @@ import { FaAngleDoubleRight } from "react-icons/fa";
 
 
 interface RightNavProps {
-    currentOrientation: number;
-    requestOrientation: number;
-    setRequestOrientation: any;
+    rxMsg : any
 }
 
-const RightNav: React.FC<RightNavProps> = ({ currentOrientation, requestOrientation, setRequestOrientation }) => {
+const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
     const [RightNav, setRightNav] = useState(false)
+    const [batteryTemperature, setBatteryTemperature] = useState(0)
+    const [batteryCapacity, setBatteryCapacity] = useState(0)
+    const [loadWeight, setLoadWeight] = useState(0)
+    const [status, setStatus] = useState(0)
+    const [coordinate, setCoordinate] = useState([0,0,0])
     return (
         <div className='fixed flex items-center right-0 top-0 h-screen'>
             {/* Orientation */}
-            <div className='flex flex-col justify-center items-center px-6 py-8 bg-slate-900 rounded-r-lg relative'>
-                {RightNav ?
-                    <p className=' my-4 font-mono'>Update Orientation</p>
-                    :
-                    null
-                }
+            <div className='flex flex-col justify-center items-center px-6 py-8 bg-slate-900 rounded-l-2xl relative'>
 
                 {RightNav ?
-                    <div className='flex flex-col items-center justify-center'>
-                        <img style={{ transform: `rotate(${Math.round(currentOrientation * 360)}deg)`, transformOrigin: 'center' }} className={`w-32`} src={'./Crank.png'} />
+                    <div className='text-center my-4'>
+                        <p className='text-xs'>Battery Temperature</p>
+                        <p className='text-3xl font-bold mt-1'>{batteryTemperature ? batteryTemperature : 0} <span className='text-xs'>C</span></p>
                     </div>
                     :
                     null
                 }
 
                 {RightNav ?
-                    <div className='flex flex-col justify-center items-center'>
-                        <CircularInput className='w-32' value={requestOrientation} onChange={setRequestOrientation}>
-                            <CircularTrack strokeWidth={1} />
-                            <CircularThumb r={10} />
-                            <text x={100} y={100} fill='white' textAnchor="middle" dy="0.3em" fontWeight="bold">
-                                {Math.round(requestOrientation * 360)}°
-                            </text>
-                        </CircularInput>
+                    <div className='text-center my-4'>
+                        <p className='text-xs'>Battery Capacity</p>
+                        <p className='text-3xl font-bold mt-1'>{batteryCapacity ? batteryCapacity : 0} <span className='text-xs'>%</span></p>
                     </div>
                     :
                     null
                 }
 
                 {RightNav ?
-                    <div>
-                        <span className='bg-amber-500 px-6 py-1.5 rounded-md text-sm cursor-pointer shadow hover:bg-amber-600'>Update</span>
+                    <div className='text-center my-4'>
+                        <p className='text-xs'>Load Weight</p>
+                        <p className='text-3xl font-bold mt-1'>{loadWeight ? loadWeight : 0} <span className='text-xs'>kg</span></p>
+                    </div>
+                    :
+                    null
+                }
+
+                {RightNav ?
+                    <div className='text-center my-4'>
+                        <p className='text-xs'>Status</p>
+                        <p className='text-xl font-bold mt-1'>{status ? status : 0}</p>
+                    </div>
+                    :
+                    null
+                }
+
+                {RightNav ?
+                    <div className='text-center my-4'>
+                        <p className='text-xs'>Position</p>
+                        <p className='text-xl font-bold mt-1'>{coordinate ? `[${coordinate[0]}, ${coordinate[1]}, ${coordinate[2]}]` : 0}</p>
                     </div>
                     :
                     null
@@ -57,7 +70,7 @@ const RightNav: React.FC<RightNavProps> = ({ currentOrientation, requestOrientat
                         <FaAngleDoubleRight />
                     </div>
                     :
-                    <div onClick={()=>setRightNav(true)} className='bg-amber-500 cursor-pointer px-5 py-5 absolute -left-5 rounded-full'>
+                    <div onClick={()=>setRightNav(true)} className='bg-amber-500 cursor-pointer px-5 py-5 absolute -left-2 rounded-full'>
                         <FaAngleDoubleLeft />
                     </div>
                 }

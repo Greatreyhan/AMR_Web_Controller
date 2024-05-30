@@ -2,8 +2,7 @@
 import React, { useState, useEffect } from 'react'
 import Grid from './Grid'
 import mqtt, { MqttClient } from 'mqtt'
-import LeftNav from '../Components/LeftNav'
-import RightNav from '../Components/RightNav'
+
 
 const Calibration = () => {
   const [currentPosition, setCurrentPosition] = useState([10, 25])
@@ -161,7 +160,7 @@ const Calibration = () => {
         }
       </div>
       <div className='w-full flex justify-center py-4'>
-        <Grid rows={20} cols={50} currentPosition={currentPosition} mqttPublish={mqttPublish} dataKinematika={dataKinematika} dataEnvironment={dataEnvironment} />
+        <Grid rows={20} cols={50} currentPosition={currentPosition} mqttPublish={mqttPublish} dataKinematika={dataKinematika} dataEnvironment={dataEnvironment} rxMsg={rxMsg} />
       </div>
     </div>
   )

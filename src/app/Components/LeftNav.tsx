@@ -15,7 +15,7 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
     return (
         <div className='fixed flex items-center left-0 top-0 h-screen'>
             {/* Orientation */}
-            <div className='flex flex-col justify-center items-center px-6 py-8 bg-slate-900 rounded-r-lg relative'>
+            <div className='flex flex-col justify-center items-center px-6 py-8 bg-slate-900 rounded-r-2xl relative'>
                 {leftNav ?
                     <p className=' my-4 font-mono'>Update Orientation</p>
                     :
@@ -57,7 +57,7 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
                         <FaAngleDoubleLeft />
                     </div>
                     :
-                    <div onClick={()=>setLeftNav(true)} className='bg-amber-500 cursor-pointer px-5 py-5 absolute -right-5 rounded-full'>
+                    <div onClick={()=>setLeftNav(true)} className='bg-amber-500 cursor-pointer px-5 py-5 absolute -right-2 rounded-full'>
                         <FaAngleDoubleRight />
                     </div>
                 }

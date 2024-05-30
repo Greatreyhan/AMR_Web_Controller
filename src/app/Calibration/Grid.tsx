@@ -6,13 +6,14 @@ import RightNav from '../Components/RightNav';
 interface GridProps {
     rows: number;
     cols: number;
+    rxMsg : any;
     currentPosition: Array<number>;
     mqttPublish: Function;
     dataKinematika: Array<number>;
     dataEnvironment: Array<number>;
 }
 
-const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, dataKinematika, dataEnvironment }) => {
+const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, dataKinematika, dataEnvironment, rxMsg }) => {
     const [requestPosition, setRequestPosition] = useState(currentPosition)
     const [hover, setHover] = useState([0, 0])
     const [requestOrientation, setRequestOrientation] = useState(0)
@@ -31,7 +32,8 @@ const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, d
         const xpos = Math.abs(x) >= 100 ? `${x}` : Math.abs(x) >= 10 ? `0${x}` : `00${x}`
         const ypos = Math.abs(y) >= 100 ? `${y}` : Math.abs(y) >= 10 ? `0${y}` : `00${y}`
         const ori = Math.abs(Math.round(requestOrientation*360)) >= 100 ? `${Math.abs(Math.round(requestOrientation*360))}` : Math.abs(Math.round(requestOrientation*360)) >= 10 ? `0${Math.abs(Math.round(requestOrientation*360))}` : `00${Math.abs(Math.round(requestOrientation*360))}`
-        const msg = `AA${x >= 0 ? 'P' : 'N'}${xpos}${y >= 0 ? 'P' : 'N'}${ypos}O${ori}`
+        const step = '0001'
+        const msg = `AA${x >= 0 ? 'P' : 'N'}${xpos}${y >= 0 ? 'P' : 'N'}${ypos}O${ori}S${step}`
         mqttPublish(msg)
     }
 
@@ -150,7 +152,7 @@ const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, d
             </div>
 
             <LeftNav currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
-            <RightNav currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
+            <RightNav rxMsg={rxMsg} />
 
         </div>
     );
