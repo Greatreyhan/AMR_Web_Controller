@@ -32,7 +32,7 @@ const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, d
         const xpos = Math.abs(x) >= 100 ? `${x}` : Math.abs(x) >= 10 ? `0${x}` : `00${x}`
         const ypos = Math.abs(y) >= 100 ? `${y}` : Math.abs(y) >= 10 ? `0${y}` : `00${y}`
         const ori = Math.abs(Math.round(requestOrientation*360)) >= 100 ? `${Math.abs(Math.round(requestOrientation*360))}` : Math.abs(Math.round(requestOrientation*360)) >= 10 ? `0${Math.abs(Math.round(requestOrientation*360))}` : `00${Math.abs(Math.round(requestOrientation*360))}`
-        const step = '0001'
+        const step = '001'
         const msg = `AA${x >= 0 ? 'P' : 'N'}${xpos}${y >= 0 ? 'P' : 'N'}${ypos}O${ori}S${step}`
         mqttPublish(msg)
     }
