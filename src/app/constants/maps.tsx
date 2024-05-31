@@ -68,7 +68,7 @@ const something = [
     ['-','-','-','#','-','-','-','-','-','-','-','-','#','-','-','-','-','-','-','-'],
 ]
 
-export const maps = {
+export const maps:any = {
     wall,
     mrmap,
     something

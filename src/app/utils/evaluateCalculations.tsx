@@ -41,7 +41,7 @@ export const removeCurrentPositionFromOpen = (open: Position[], currentPosition:
   return open.filter((openTile) => openTile.x !== currentPosition.x || openTile.y !== currentPosition.y);
 };
 
-const checkIfCanReturn = (item: Position): Position | undefined => {
+const checkIfCanReturn = (item: Position): any => {
   if (item.x === -1 || item.y === -1) {
     return undefined;
   }

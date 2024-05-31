@@ -21,12 +21,12 @@ interface MapProps {
   goal: Position;
   path: Tile[];
   userPosition: Position;
-  setTileAsBlocker: (x: number, y: number) => void;
+  setTileAsBlocker: any;
   isSetting: boolean;
   isGoalSetting: boolean;
   isStartSetting: boolean;
-  onSetGoal: (x: number, y: number) => void;
-  onSetStart: (x: number, y: number) => void;
+  onSetGoal: any;
+  onSetStart: any;
 }
 
 export const Map: React.FC<MapProps> = ({
