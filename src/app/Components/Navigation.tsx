@@ -26,8 +26,8 @@ const Navigation = () => {
                 <Link className="block mt-4 mr-10 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Calibration">
                     Calibration
                 </Link>
-                <Link className="block mt-4 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Information">
-                    Information
+                <Link className="block mt-4 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Astar">
+                    Algorithm
                 </Link>
             </div>
             <div className="hidden w-full navbar-menu lg:order-3 lg:block lg:w-2/5 lg:text-right">
