@@ -4,8 +4,9 @@
 }
 
 .tile {
-    border-top: 1px solid white;
-    border-left: 1px solid white;
+    cursor: pointer;
+    background-color: rgba(51, 65, 85, .5);
+    border: 1px solid rgb(2, 6, 23);
     font-size: 10px;
 }
 
@@ -24,7 +25,7 @@
 
 
 .is_open {
-    background: green;
+    background: rgba(217, 119, 6, .2);
 }
 
 .is_road {
@@ -32,17 +33,17 @@
 }
 
 .is_goal {
-    background: plum;
+    background: rgb(7, 89, 133);
 }
 
 .is_user {
-    background: blueviolet ;
+    background: rgb(245, 158, 11) ;
 }
 
 .is_path {
-    background-color: brown !important;
+    background-color: rgb(253, 224, 71) !important;
 }
 
 .is_tentative {
-    background-color: yellow !important;
+    background-color: rgb(163, 230, 53) !important;
 }
