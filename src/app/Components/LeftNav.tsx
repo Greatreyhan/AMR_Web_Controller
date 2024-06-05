@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { CircularInput, CircularProgress, CircularThumb, CircularTrack } from 'react-circular-input';
 import { FaAngleDoubleLeft } from "react-icons/fa";
 import { FaAngleDoubleRight } from "react-icons/fa";
@@ -8,12 +8,70 @@ interface LeftNavProps {
     currentOrientation: number;
     requestOrientation: number;
     setRequestOrientation: any;
+    rxMsg: any;
 }
 
-const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientation, setRequestOrientation }) => {
+const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientation, setRequestOrientation, rxMsg }) => {
+
+    const [coordinate, setCoordinate] = useState([0,0,0])
+
+    const checksum_pc_generator = (packet:any) => {
+        const sum = packet.reduce((acc:any, byte:any) => acc + byte, 0);
+        return sum & 0xFF;
+    };
+
+    const parseKinematicPacket = (hexString:string) => {
+        // Convert the hex string to a byte array
+        const packet = [];
+        for (let i = 0; i < hexString.length; i += 2) {
+            packet.push(parseInt(hexString.substr(i, 2), 16));
+        }
+    
+        // // Check packet length
+        // if (packet.length !== 16) {
+        //     console.log('Not long enough');
+        //     return null;
+        // }
+    
+        // // Check header bytes
+        // if (packet[0] !== 0xA5 || packet[1] !== 0x5A) {
+        //     console.log('Incorrect header');
+        //     return null;
+        // }
+    
+        // // Validate checksum
+        // const checksum = checksum_pc_generator(packet.slice(0, 15));
+        // if (packet[15] !== checksum) {
+        //     console.log('Checksum wrong');
+        //     return null;
+        // }
+    
+        // Extract and parse kinematic values
+        const Sx = (packet[3] << 8) | packet[4];
+        const Sy = (packet[5] << 8) | packet[6];
+        const St = (packet[7] << 8) | packet[8];
+        const T = (packet[9] << 8) | packet[10];
+    
+        const KinematicData = {
+            Sx,
+            Sy,
+            St,
+            T
+        };
+        setCoordinate([KinematicData.Sx,KinematicData.Sy,KinematicData.St])
+        console.log(KinematicData);
+        return KinematicData;
+    }
+
+    useEffect(()=>{
+        if(rxMsg[4] == '0' && rxMsg[5] == '5'){
+            parseKinematicPacket(rxMsg)
+        }
+    },[rxMsg])
+
     const [leftNav, setLeftNav] = useState(false)
     return (
-        <div className='fixed flex items-center left-0 top-0 h-screen'>
+        <div className='fixed flex items-center left-0 top-0 h-screen z-50'>
             {/* Orientation */}
             <div className='flex flex-col justify-center items-center px-6 py-8 bg-slate-900 rounded-r-2xl relative'>
                 {leftNav ?
@@ -24,7 +82,7 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
 
                 {leftNav ?
                     <div className='flex flex-col items-center justify-center'>
-                        <img style={{ transform: `rotate(${Math.round(currentOrientation * 360)}deg)`, transformOrigin: 'center' }} className={`w-32`} src={'./Crank.png'} />
+                        <img style={{ transform: `rotate(${Math.round(coordinate[2])}deg)`, transformOrigin: 'center' }} className={`w-32`} src={'./Crank.png'} />
                     </div>
                     :
                     null

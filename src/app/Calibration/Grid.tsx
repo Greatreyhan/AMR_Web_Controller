@@ -153,7 +153,7 @@ const Grid: React.FC<GridProps> = ({ rows, cols, currentPosition, mqttPublish, d
                 </div>
             </div>
 
-            <LeftNav currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
+            <LeftNav rxMsg={rxMsg} currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
             <RightNav rxMsg={rxMsg} />
 
         </div>

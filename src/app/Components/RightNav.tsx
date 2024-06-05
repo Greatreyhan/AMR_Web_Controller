@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CircularInput, CircularProgress, CircularThumb, CircularTrack } from 'react-circular-input';
 import { FaAngleDoubleLeft } from "react-icons/fa";
 import { FaAngleDoubleRight } from "react-icons/fa";
@@ -15,15 +15,170 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
     const [loadWeight, setLoadWeight] = useState(0)
     const [status, setStatus] = useState(0)
     const [coordinate, setCoordinate] = useState([0,0,0])
+    
+    //------------------------------------------------- PARSING DATA --------------------------------------------------------------------//
+    const checksum_pc_generator = (packet:any) => {
+        const sum = packet.reduce((acc:any, byte:any) => acc + byte, 0);
+        return sum & 0xFF;
+    };
+
+    const parseSensorPacket = (hexString:string) => {
+        // Convert the hex string to a byte array
+        const packet = [];
+        for (let i = 0; i < hexString.length; i += 2) {
+            packet.push(parseInt(hexString.substr(i, 2), 16));
+        }
+    
+        // // Check packet length
+        // if (packet.length !== 16) {
+        //     console.log('Not long enough');
+        //     return null;
+        // }
+    
+        // // Check header bytes
+        // if (packet[0] !== 0xA5 || packet[1] !== 0x5A) {
+        //     console.log('Incorrect header');
+        //     return null;
+        // }
+    
+        // // Validate checksum
+        // const checksum = checksum_pc_generator(packet.slice(0, 15));
+        // if (packet[15] !== checksum) {
+        //     console.log('Checksum wrong');
+        //     return null;
+        // }
+    
+        // Extract and parse sensor values
+        const sensor = {
+            temperature: (packet[3] << 8) | packet[4],
+            humidity: (packet[5] << 8) | packet[6],
+            current: (packet[7] << 8) | packet[8],
+            voltage: (packet[9] << 8) | packet[10],
+            loadcell: (packet[11] << 8) | packet[12],
+        };
+        setBatteryTemperature(sensor.temperature)
+        setLoadWeight(sensor.loadcell)
+        setBatteryCapacity(voltageToSoC((sensor.voltage)/100))
+        console.log(sensor);
+        return sensor;
+    };
+
+    const parseBNO08XPacket = (hexString:string) => {
+        // Convert the hex string to a byte array
+        const packet = [];
+        for (let i = 0; i < hexString.length; i += 2) {
+            packet.push(parseInt(hexString.substr(i, 2), 16));
+        }
+    
+        // // Check packet length
+        // if (packet.length !== 16) {
+        //     console.log('Not long enough');
+        //     return null;
+        // }
+    
+        // // Check header bytes
+        // if (packet[0] !== 0xA5 || packet[1] !== 0x5A) {
+        //     console.log('Incorrect header');
+        //     return null;
+        // }
+    
+        // // Validate checksum
+        // const checksum = checksum_pc_generator(packet.slice(0, 15));
+        // if (packet[15] !== checksum) {
+        //     console.log('Checksum wrong');
+        //     return null;
+        // }
+    
+        // Extract and parse sensor values
+        const parseValue = (highByte:any, lowByte:any) => {
+            const value = (highByte << 8) | lowByte;
+            return highByte & 0x80 ? value - 65536 : value;
+        };
+    
+        const BNO08x = {
+            yaw: parseValue(packet[3], packet[4]),
+            pitch: parseValue(packet[5], packet[6]),
+            roll: parseValue(packet[7], packet[8]),
+            x_acceleration: parseValue(packet[9], packet[10]),
+            y_acceleration: parseValue(packet[11], packet[12]),
+            z_acceleration: parseValue(packet[13], packet[14]),
+        };
+    
+        console.log(BNO08x);
+        return BNO08x;
+    };
+
+    const parseKinematicPacket = (hexString:string) => {
+        // Convert the hex string to a byte array
+        const packet = [];
+        for (let i = 0; i < hexString.length; i += 2) {
+            packet.push(parseInt(hexString.substr(i, 2), 16));
+        }
+    
+        // // Check packet length
+        // if (packet.length !== 16) {
+        //     console.log('Not long enough');
+        //     return null;
+        // }
+    
+        // // Check header bytes
+        // if (packet[0] !== 0xA5 || packet[1] !== 0x5A) {
+        //     console.log('Incorrect header');
+        //     return null;
+        // }
+    
+        // // Validate checksum
+        // const checksum = checksum_pc_generator(packet.slice(0, 15));
+        // if (packet[15] !== checksum) {
+        //     console.log('Checksum wrong');
+        //     return null;
+        // }
+    
+        // Extract and parse kinematic values
+        const Sx = (packet[3] << 8) | packet[4];
+        const Sy = (packet[5] << 8) | packet[6];
+        const St = (packet[7] << 8) | packet[8];
+        const T = (packet[9] << 8) | packet[10];
+    
+        const KinematicData = {
+            Sx,
+            Sy,
+            St,
+            T
+        };
+        setCoordinate([KinematicData.Sx,KinematicData.Sy,KinematicData.St])
+        console.log(KinematicData);
+        return KinematicData;
+    }
+
+    const voltageToSoC = (voltage:number) => {
+        // This function should be based on the specific battery's voltage-SOC curve
+        // Here we assume a linear relationship for simplicity
+        if (voltage >= 4.2*6) return 100;
+        if (voltage <= 3.0*6) return 0;
+        return ((voltage - 3.0*6) / (4.2*6 - 3.0*6)) * 100;
+    };
+
+    useEffect(()=>{
+        if(rxMsg[4] == '0' && rxMsg[5] == '4'){
+            parseSensorPacket(rxMsg)
+        }
+        else if(rxMsg[4] == '0' && rxMsg[5] == '2'){
+            parseBNO08XPacket(rxMsg)
+        }
+        else if(rxMsg[4] == '0' && rxMsg[5] == '5'){
+            parseKinematicPacket(rxMsg)
+        }
+    },[rxMsg])
     return (
-        <div className='fixed flex items-center right-0 top-0 h-screen'>
+        <div className='fixed flex items-center right-0 top-0 h-screen z-50'>
             {/* Orientation */}
             <div className='flex flex-col justify-center items-center px-6 py-8 bg-slate-900 rounded-l-2xl relative'>
 
                 {RightNav ?
                     <div className='text-center my-4'>
                         <p className='text-xs'>Battery Temperature</p>
-                        <p className='text-3xl font-bold mt-1'>{batteryTemperature ? batteryTemperature : 0} <span className='text-xs'>C</span></p>
+                        <p className='text-3xl font-bold mt-1'>{batteryTemperature/100 ? batteryTemperature/100 : 0} <span className='text-xs'>C</span></p>
                     </div>
                     :
                     null
@@ -41,7 +196,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
                 {RightNav ?
                     <div className='text-center my-4'>
                         <p className='text-xs'>Load Weight</p>
-                        <p className='text-3xl font-bold mt-1'>{loadWeight ? loadWeight : 0} <span className='text-xs'>kg</span></p>
+                        <p className='text-3xl font-bold mt-1'>{loadWeight/100 ? loadWeight/100 : 0} <span className='text-xs'>kg</span></p>
                     </div>
                     :
                     null

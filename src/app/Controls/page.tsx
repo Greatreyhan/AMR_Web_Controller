@@ -8,8 +8,20 @@ import { useRoad } from '../hooks/useRoad';
 import { useGoalAndStart } from '../hooks/useGoalAndStart';
 import { DIMENSION } from '../constants';
 import mqtt, { MqttClient } from 'mqtt'
+import LeftNav from '../Components/LeftNav';
+import RightNav from '../Components/RightNav';
 
-function Astar() {
+interface AstarProps {
+    rows: number;
+    cols: number;
+    rxMsg : any;
+    currentPosition: Array<number>;
+    mqttPublish: Function;
+    dataKinematika: Array<number>;
+    dataEnvironment: Array<number>;
+}
+
+const Astar: React.FC<AstarProps> = ({ rows, cols, currentPosition, dataKinematika, dataEnvironment }) =>{
 
     //------------------------------------------------- SETTING MQTT CONNECTION --------------------------------------------------------------------//
 
@@ -20,6 +32,9 @@ function Astar() {
     const [isSubed, setIsSub] = useState<any>(false)
     const [payload, setPayload] = useState<any>({})
     const [connectStatus, setConnectStatus] = useState('Connect')
+
+    const [currentOrientation, setCurrentOrientation] = useState(0)
+    const [requestOrientation, setRequestOrientation] = useState(0)
 
     const [isStartSequence, setIsStartSequence] = useState(false);
 
@@ -121,6 +136,7 @@ function Astar() {
             })
         }
     }
+    
 
     //------------------------------------------------- SETTING ASTAR ALGORITHM --------------------------------------------------------------------//
 
@@ -178,8 +194,6 @@ function Astar() {
     const moveToLowestCost = () => {
         // Starting Point for Message
         if (!isStartSequence) {
-            const msg = `A55A000000000FF`
-            mqttPublish(msg)
             setIsStartSequence(true)
         }
         //////////////////////////////////////////////// Inference per-Step //////////////////////////////////
@@ -220,20 +234,25 @@ function Astar() {
     useEffect(() => {
         // update map
         setBlockersBasedOnGeneratedMap('wall')
-
-        // Connect to MQTT
-        mqttConnect();
-
-        // Subscribe to topic
-        mqttSub();
     }, [])
+
+    // useEffect(()=>{
+    //     // Connect to MQTT
+    //     mqttConnect();
+
+    //     // Subscribe to topic
+    //     mqttSub();
+    // },[])
 
     return (
         <div className="Astar pt-32 flex flex-col justify-center items-center w-full">
+            <LeftNav rxMsg={rxMsg} currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
+            <RightNav rxMsg={rxMsg} />
             <div className="Astar-header flex justify-center w-full">
 
                 <div className="Astar-content flex justify-center w-full">
                     <div className="flex flex-col gap-5 fixed items-start left-0">
+                        <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={mqttConnect}>{connectStatus}</button>
                         <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={moveToLowestCost}>move</button>
                         <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={() => window.location.reload()}>reload</button>
                     </div>
@@ -256,6 +275,7 @@ function Astar() {
                         />
                     </div>
                     <div className="flex flex-col gap-5 items-end fixed right-0">
+                        <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={mqttSub}>{isSubed ? 'Subscribed':'Subscribe'}</button>
                         <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' disabled={isStartSetting} onClick={editStartPosition}>set start</button>
                         <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' disabled={isGoalSetting} onClick={editGoalPosition}>set goal</button>
 

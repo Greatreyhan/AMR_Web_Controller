@@ -7,9 +7,24 @@ import { usePlayer } from '../hooks/useUser';
 import { useRoad } from '../hooks/useRoad';
 import { useGoalAndStart } from '../hooks/useGoalAndStart';
 import { DIMENSION } from '../constants';
+import LeftNav from '../Components/LeftNav';
+import RightNav from '../Components/RightNav';
 
-function Astar() {
+interface AstarProps {
+    rows: number;
+    cols: number;
+    rxMsg : any;
+    currentPosition: Array<number>;
+    mqttPublish: Function;
+    dataKinematika: Array<number>;
+    dataEnvironment: Array<number>;
+}
+
+const Astar: React.FC<AstarProps> = ({ rows, cols, currentPosition, mqttPublish, dataKinematika, dataEnvironment, rxMsg }) => {
     const [count, setCount] = useState(0); // frames
+
+    const [currentOrientation, setCurrentOrientation] = useState(0)
+    const [requestOrientation, setRequestOrientation] = useState(0)
 
     const [withNeighbourEvaluation, setWithNeighbourEvaluation] = useState(true);
 
@@ -93,6 +108,7 @@ function Astar() {
 
     return (
         <div className="Astar pt-32 flex flex-col justify-center items-center w-full">
+
             <div className='my-6 flex gap-x-5'>
                 <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={moveToLowestCost}>move</button>
                 <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={() => window.location.reload()}>reload</button>
@@ -135,6 +151,9 @@ function Astar() {
                 <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' disabled={isStartSetting} onClick={editStartPosition}>set start</button>
                 <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' disabled={isGoalSetting} onClick={editGoalPosition}>set goal</button>
             </div>
+
+            {/* <LeftNav currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
+            <RightNav rxMsg={rxMsg} /> */}
         </div>
     );
 }
