@@ -1,6 +1,5 @@
 'use client'
 import React, { useEffect, useState, useRef } from 'react';
-import './page.css';
 import { Map } from '../Components/Map';
 import { useBlockers } from '../hooks/useBlockers';
 import { usePlayer } from '../hooks/useUser';
@@ -10,17 +9,9 @@ import { DIMENSION } from '../constants';
 import LeftNav from '../Components/LeftNav';
 import RightNav from '../Components/RightNav';
 
-interface AstarProps {
-    rows: number;
-    cols: number;
-    rxMsg : any;
-    currentPosition: Array<number>;
-    mqttPublish: Function;
-    dataKinematika: Array<number>;
-    dataEnvironment: Array<number>;
-}
 
-const Astar: React.FC<AstarProps> = ({ rows, cols, currentPosition, mqttPublish, dataKinematika, dataEnvironment, rxMsg }) => {
+
+const Astar = () => {
     const [count, setCount] = useState(0); // frames
 
     const [currentOrientation, setCurrentOrientation] = useState(0)

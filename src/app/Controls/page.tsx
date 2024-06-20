@@ -11,17 +11,7 @@ import mqtt, { MqttClient } from 'mqtt'
 import LeftNav from '../Components/LeftNav';
 import RightNav from '../Components/RightNav';
 
-interface AstarProps {
-    rows: number;
-    cols: number;
-    rxMsg : any;
-    currentPosition: Array<number>;
-    mqttPublish: Function;
-    dataKinematika: Array<number>;
-    dataEnvironment: Array<number>;
-}
-
-const Astar: React.FC<AstarProps> = ({ rows, cols, currentPosition, dataKinematika, dataEnvironment }) =>{
+const Astar= () =>{
 
     //------------------------------------------------- SETTING MQTT CONNECTION --------------------------------------------------------------------//
 

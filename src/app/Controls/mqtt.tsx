@@ -2,18 +2,17 @@
 import React, { useState, useEffect } from 'react'
 import mqtt, { MqttClient } from 'mqtt'
 
-
-const [currentPosition, setCurrentPosition] = useState([10, 25])
+const MqttComponent = () => {
+  const [currentPosition, setCurrentPosition] = useState([10, 25])
   const [txMsg, setTxMsg] = useState('')
   const [rxMsg, setRxMsg] = useState('')
-
   const [client, setClient] = useState<MqttClient | null>(null)
   const [isSubed, setIsSub] = useState<any>(false)
   const [payload, setPayload] = useState<any>({})
   const [connectStatus, setConnectStatus] = useState('Connect')
-//------------------------------------------------- SETTING MQTT CONNECTION --------------------------------------------------------------------//
 
- const mqttConnect = () => {
+  //------------------------------------------------- SETTING MQTT CONNECTION --------------------------------------------------------------------//
+  const mqttConnect = () => {
     // Host Setting 
     const url = `wss://broker.emqx.io:8084/mqtt`
     const options = {
@@ -25,7 +24,7 @@ const [currentPosition, setCurrentPosition] = useState([10, 25])
       connectTimeout: 30 * 1000, // ms
     }
     setConnectStatus('Connecting')
-    const mqttClient = mqtt.connect(url, options);
+    const mqttClient = mqtt.connect(url, options)
     setClient(mqttClient)
   }
 
@@ -75,18 +74,16 @@ const [currentPosition, setCurrentPosition] = useState([10, 25])
       client.publish(topic, payloadMsg, { qos: qosOption }, (error) => {
         if (error) {
           console.log('Publish error: ', error)
-        }
-        else{
+        } else {
           console.log('Publish to: ', topic)
         }
       })
-      setTxMsg(payloadMsg);
+      setTxMsg(payloadMsg)
     }
   }
 
   const mqttSub = () => {
     if (client) {
-
       client.subscribe('astar/amrparams', { qos: 0 }, (error) => {
         if (error) {
           console.log('Subscribe to topics error', error)
@@ -110,3 +107,11 @@ const [currentPosition, setCurrentPosition] = useState([10, 25])
       })
     }
   }
+
+  return (
+    <div>
+    </div>
+  )
+}
+
+export default MqttComponent
