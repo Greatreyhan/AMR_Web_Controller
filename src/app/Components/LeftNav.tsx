@@ -14,6 +14,7 @@ interface LeftNavProps {
 const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientation, setRequestOrientation, rxMsg }) => {
 
     const [coordinate, setCoordinate] = useState([0,0,0])
+    const [BNO08X, setBNO08X] = useState(0)
 
     const checksum_pc_generator = (packet:any) => {
         const sum = packet.reduce((acc:any, byte:any) => acc + byte, 0);
@@ -26,25 +27,7 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
         for (let i = 0; i < hexString.length; i += 2) {
             packet.push(parseInt(hexString.substr(i, 2), 16));
         }
-    
-        // // Check packet length
-        // if (packet.length !== 16) {
-        //     console.log('Not long enough');
-        //     return null;
-        // }
-    
-        // // Check header bytes
-        // if (packet[0] !== 0xA5 || packet[1] !== 0x5A) {
-        //     console.log('Incorrect header');
-        //     return null;
-        // }
-    
-        // // Validate checksum
-        // const checksum = checksum_pc_generator(packet.slice(0, 15));
-        // if (packet[15] !== checksum) {
-        //     console.log('Checksum wrong');
-        //     return null;
-        // }
+
     
         // Extract and parse kinematic values
         const Sx = (packet[3] << 8) | packet[4];
@@ -63,9 +46,39 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
         return KinematicData;
     }
 
+    const parseBNO08XPacket = (hexString:string) => {
+        // Convert the hex string to a byte array
+        const packet = [];
+        for (let i = 0; i < hexString.length; i += 2) {
+            packet.push(parseInt(hexString.substr(i, 2), 16));
+        }
+    
+        // Extract and parse sensor values
+        const parseValue = (highByte:any, lowByte:any) => {
+            const value = (highByte << 8) | lowByte;
+            return highByte & 0x80 ? value - 65536 : value;
+        };
+    
+        const BNO08x = {
+            yaw: parseValue(packet[3], packet[4]),
+            pitch: parseValue(packet[5], packet[6]),
+            roll: parseValue(packet[7], packet[8]),
+            x_acceleration: parseValue(packet[9], packet[10]),
+            y_acceleration: parseValue(packet[11], packet[12]),
+            z_acceleration: parseValue(packet[13], packet[14]),
+        };
+    
+        console.log(BNO08x);
+        setBNO08X(BNO08x.yaw)
+        return BNO08x;
+    };
+
     useEffect(()=>{
         if(rxMsg[4] == '0' && rxMsg[5] == '5'){
             parseKinematicPacket(rxMsg)
+        }
+        else if(rxMsg[4] == '0' && rxMsg[5] == '2'){
+            parseBNO08XPacket(rxMsg)
         }
     },[rxMsg])
 
@@ -82,7 +95,8 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
 
                 {leftNav ?
                     <div className='flex flex-col items-center justify-center'>
-                        <img style={{ transform: `rotate(${Math.round(coordinate[2])}deg)`, transformOrigin: 'center' }} className={`w-32`} src={'./Crank.png'} />
+                        <img style={{ transform: `rotate(${Math.round(BNO08X/100)}deg)`, transformOrigin: 'center' }} className={`w-32`} src={'./Crank.png'} />
+                        <p>{Math.round(BNO08X/100)}</p>
                     </div>
                     :
                     null

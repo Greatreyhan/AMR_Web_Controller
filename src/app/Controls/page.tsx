@@ -12,6 +12,47 @@ import LeftNav from '../Components/LeftNav';
 import RightNav from '../Components/RightNav';
 
 const Astar= () =>{
+    //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
+    const parseKinematicPacket = (hexString:string) => {
+        // Convert the hex string to a byte array
+        const packet = [];
+        for (let i = 0; i < hexString.length; i += 2) {
+            packet.push(parseInt(hexString.substr(i, 2), 16));
+        }
+    
+        // Extract and parse kinematic values
+        let Sx = ((packet[3] << 8) | packet[4]);
+        Sx = (packet[3] & 0x80) ? 0 : Sx;
+        let Sy = ((packet[5] << 8) | packet[6]);
+        Sy = (packet[5] & 0x80) ? 0 : Sy;
+        let St = ((packet[7] << 8) | packet[8]);
+        St = (packet[7] & 0x80) ? 0 : St;
+        let Vx = ((packet[9] << 8) | packet[10]);
+        Vx = (packet[9] & 0x80) ? 0 : Vx;
+        let Vy = ((packet[11] << 8) | packet[12]);
+        Vy = (packet[11] & 0x80) ? 0 : Vy;
+        let Vt = ((packet[13] << 8) | packet[14]);
+        Vt = (packet[13] & 0x80) ? 0 : Vt;
+    
+        const KinematicData = {
+            Sx,
+            Sy,
+            St,
+            Vx,
+            Vy,
+            Vt
+        };
+        // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
+        const pos_data = {
+            x:Math.round(Sy/100),
+            y:Math.round(Sx/100)
+        }
+        clearAll({ ...pos_data, ...extendUserData });
+        setStart(pos_data)
+        setIsStartSetting(false)
+        console.log(KinematicData);
+        return KinematicData;
+    }
 
     //------------------------------------------------- SETTING MQTT CONNECTION --------------------------------------------------------------------//
 
@@ -65,6 +106,11 @@ const Astar= () =>{
                 const payload = { topic, message: message.toString() }
                 setPayload(payload)
                 setRxMsg(message.toString())
+                const msg = message.toString()
+                if(msg[4] == '1' && msg[5] == '5'){
+                    parseKinematicPacket(msg)
+                }
+                // ---------------------------------------------------- HANDLE COORDINATE ------------------------------------------------------------------------//
                 console.log(`received message: ${message} from topic: ${topic}`)
             })
         }
@@ -164,19 +210,21 @@ const Astar= () =>{
     useEffect(() => {
         positionRef.current = player;
         setFinalPath()
-
+        console.log(path)
+        console.log(goal)
         //////////////////////////////////////////////// Inference to send the path //////////////////////////////////
         if (isGoalReached(positionRef.current)) {
-            let msg = `A55A${path.length}|`
+            let msg = `A55A${path.length+1}|${goal.x}:${goal.y}|`
             path.map((step,i)=>{
                 if((path.length - i)>1) msg += `${step.x}:${step.y}|`
                 else msg += `${step.x}:${step.y}FF`
             })
             mqttPublish(msg)
+            console.log(msg)
             setIsStartSequence(false)
         }
 
-    }, [count])
+    }, [count,positionRef.current])
     /* eslint-enable */
 
     const moveByOneTile = () => setCount((prevState) => prevState + 1);

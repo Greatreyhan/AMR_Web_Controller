@@ -29,25 +29,6 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
             packet.push(parseInt(hexString.substr(i, 2), 16));
         }
     
-        // // Check packet length
-        // if (packet.length !== 16) {
-        //     console.log('Not long enough');
-        //     return null;
-        // }
-    
-        // // Check header bytes
-        // if (packet[0] !== 0xA5 || packet[1] !== 0x5A) {
-        //     console.log('Incorrect header');
-        //     return null;
-        // }
-    
-        // // Validate checksum
-        // const checksum = checksum_pc_generator(packet.slice(0, 15));
-        // if (packet[15] !== checksum) {
-        //     console.log('Checksum wrong');
-        //     return null;
-        // }
-    
         // Extract and parse sensor values
         const sensor = {
             temperature: (packet[3] << 8) | packet[4],
@@ -69,25 +50,6 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
         for (let i = 0; i < hexString.length; i += 2) {
             packet.push(parseInt(hexString.substr(i, 2), 16));
         }
-    
-        // // Check packet length
-        // if (packet.length !== 16) {
-        //     console.log('Not long enough');
-        //     return null;
-        // }
-    
-        // // Check header bytes
-        // if (packet[0] !== 0xA5 || packet[1] !== 0x5A) {
-        //     console.log('Incorrect header');
-        //     return null;
-        // }
-    
-        // // Validate checksum
-        // const checksum = checksum_pc_generator(packet.slice(0, 15));
-        // if (packet[15] !== checksum) {
-        //     console.log('Checksum wrong');
-        //     return null;
-        // }
     
         // Extract and parse sensor values
         const parseValue = (highByte:any, lowByte:any) => {
@@ -115,38 +77,29 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
             packet.push(parseInt(hexString.substr(i, 2), 16));
         }
     
-        // // Check packet length
-        // if (packet.length !== 16) {
-        //     console.log('Not long enough');
-        //     return null;
-        // }
-    
-        // // Check header bytes
-        // if (packet[0] !== 0xA5 || packet[1] !== 0x5A) {
-        //     console.log('Incorrect header');
-        //     return null;
-        // }
-    
-        // // Validate checksum
-        // const checksum = checksum_pc_generator(packet.slice(0, 15));
-        // if (packet[15] !== checksum) {
-        //     console.log('Checksum wrong');
-        //     return null;
-        // }
-    
         // Extract and parse kinematic values
-        const Sx = (packet[3] << 8) | packet[4];
-        const Sy = (packet[5] << 8) | packet[6];
-        const St = (packet[7] << 8) | packet[8];
-        const T = (packet[9] << 8) | packet[10];
+        let Sx = ((packet[3] << 8) | packet[4]);
+        Sx = (packet[3] & 0x80) ? (Sx - 65536) : Sx;
+        let Sy = ((packet[5] << 8) | packet[6]);
+        Sy = (packet[5] & 0x80) ? (Sy - 65536) : Sy;
+        let St = ((packet[7] << 8) | packet[8]);
+        St = (packet[7] & 0x80) ? (St - 65536) : St;
+        let Vx = ((packet[9] << 8) | packet[10]);
+        Vx = (packet[9] & 0x80) ? (Vx - 65536) : Vx;
+        let Vy = ((packet[11] << 8) | packet[12]);
+        Vy = (packet[11] & 0x80) ? (Vy - 65536) : Vy;
+        let Vt = ((packet[13] << 8) | packet[14]);
+        Vt = (packet[13] & 0x80) ? (Vt - 65536) : Vt;
     
         const KinematicData = {
             Sx,
             Sy,
             St,
-            T
+            Vx,
+            Vy,
+            Vt
         };
-        setCoordinate([KinematicData.Sx,KinematicData.Sy,KinematicData.St])
+        setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
         console.log(KinematicData);
         return KinematicData;
     }
@@ -156,7 +109,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
         // Here we assume a linear relationship for simplicity
         if (voltage >= 4.2*6) return 100;
         if (voltage <= 3.0*6) return 0;
-        return ((voltage - 3.0*6) / (4.2*6 - 3.0*6)) * 100;
+        return (((voltage - 3.0*6) / (4.2*6 - 3.0*6)) * 100).toFixed(2);
     };
 
     useEffect(()=>{
@@ -166,7 +119,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
         else if(rxMsg[4] == '0' && rxMsg[5] == '2'){
             parseBNO08XPacket(rxMsg)
         }
-        else if(rxMsg[4] == '0' && rxMsg[5] == '5'){
+        else if(rxMsg[4] == '1' && rxMsg[5] == '5'){
             parseKinematicPacket(rxMsg)
         }
     },[rxMsg])
@@ -178,7 +131,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
                 {RightNav ?
                     <div className='text-center my-4'>
                         <p className='text-xs'>Battery Temperature</p>
-                        <p className='text-3xl font-bold mt-1'>{batteryTemperature/100 ? batteryTemperature/100 : 0} <span className='text-xs'>C</span></p>
+                        <p className='text-3xl font-bold mt-1'>{batteryTemperature/100 ? batteryTemperature/100 : 0} <span className='text-xs'>deg</span></p>
                     </div>
                     :
                     null
