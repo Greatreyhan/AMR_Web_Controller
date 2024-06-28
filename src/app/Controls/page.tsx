@@ -73,6 +73,7 @@ const Astar= () =>{
     const [requestOrientation, setRequestOrientation] = useState(0)
 
     const [isStartSequence, setIsStartSequence] = useState(false);
+    const [isLift, setIsLift] = useState(false)
 
 
     const mqttConnect = () => {
@@ -233,6 +234,13 @@ const Astar= () =>{
     }, [positionRef.current])
     /* eslint-enable */
 
+    const handleLift = () =>{
+        setIsLift(!isLift)
+            let msg = `AZZA${isLift}FF`
+            mqttPublish(msg)
+            console.log(msg)        
+    }
+
     const moveByOneTile = () => setCount((prevState) => prevState + 1);
 
     const moveToLowestCost = () => {
@@ -321,7 +329,7 @@ const Astar= () =>{
                         {/* <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={() => window.location.reload()}>reload</button> */}
                         <button className={`px-6 py-1.5 ${isStartSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isStartSetting} onClick={editStartPosition}><HiCursorArrowRays/><span className='ml-1'>set start</span></button>
                         <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays/><span className='ml-1'>set goal</span></button>
-                        <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={editGoalPosition}><MdForklift/><span className='ml-1'>Lift Load</span></button>
+                        <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`}  onClick={handleLift}><MdForklift/><span className='ml-1'>Lift Load</span></button>
                     </div>
                 </div>
 
