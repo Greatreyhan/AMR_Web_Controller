@@ -109,7 +109,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
         // Here we assume a linear relationship for simplicity
         if (voltage >= 4.2*6) return 100;
         if (voltage <= 3.0*6) return 0;
-        return (((voltage - 3.0*6) / (4.2*6 - 3.0*6)) * 100).toFixed(2);
+        return parseFloat((((voltage - 3.0*6) / (4.2*6 - 3.0*6)) * 100).toFixed(2));
     };
 
     useEffect(()=>{
