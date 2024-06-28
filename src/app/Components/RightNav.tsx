@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { CircularInput, CircularProgress, CircularThumb, CircularTrack } from 'react-circular-input';
 import { FaAngleDoubleLeft } from "react-icons/fa";
 import { FaAngleDoubleRight } from "react-icons/fa";
+import { MdBattery90 } from "react-icons/md";
 
 
 interface RightNavProps {
@@ -139,7 +140,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
 
                 {RightNav ?
                     <div className='text-center my-4'>
-                        <p className='text-xs'>Battery Capacity</p>
+                        <p className='text-xs flex items-center'><span>Battery Capacity</span></p>
                         <p className='text-3xl font-bold mt-1'>{batteryCapacity ? batteryCapacity : 0} <span className='text-xs'>%</span></p>
                     </div>
                     :

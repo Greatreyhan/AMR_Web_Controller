@@ -10,6 +10,11 @@ import { DIMENSION } from '../constants';
 import mqtt, { MqttClient } from 'mqtt'
 import LeftNav from '../Components/LeftNav';
 import RightNav from '../Components/RightNav';
+import { PiPlugsConnectedFill } from "react-icons/pi";
+import { MdGetApp } from "react-icons/md";
+import { HiCursorArrowRays } from "react-icons/hi2";
+import { IoMdMove } from "react-icons/io";
+import { MdForklift } from "react-icons/md";
 
 const Astar= () =>{
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
@@ -206,12 +211,13 @@ const Astar= () =>{
     const positionRef = useRef(player)
 
 
-
     useEffect(() => {
         positionRef.current = player;
         setFinalPath()
-        console.log(path)
-        console.log(goal)
+
+    }, [count])
+
+    useEffect(() => {
         //////////////////////////////////////////////// Inference to send the path //////////////////////////////////
         if (isGoalReached(positionRef.current)) {
             let msg = `A55A${path.length+1}|${goal.x}:${goal.y}|`
@@ -224,7 +230,7 @@ const Astar= () =>{
             setIsStartSequence(false)
         }
 
-    }, [count,positionRef.current])
+    }, [positionRef.current])
     /* eslint-enable */
 
     const moveByOneTile = () => setCount((prevState) => prevState + 1);
@@ -271,7 +277,7 @@ const Astar= () =>{
 
     useEffect(() => {
         // update map
-        setBlockersBasedOnGeneratedMap('wall')
+        setBlockersBasedOnGeneratedMap('blank')
     }, [])
 
     // useEffect(()=>{
@@ -289,11 +295,7 @@ const Astar= () =>{
             <div className="Astar-header flex justify-center w-full">
 
                 <div className="Astar-content flex justify-center w-full">
-                    <div className="flex flex-col gap-5 fixed items-start left-0">
-                        <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={mqttConnect}>{connectStatus}</button>
-                        <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={moveToLowestCost}>move</button>
-                        <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={() => window.location.reload()}>reload</button>
-                    </div>
+ 
                     <div className='flex-1 flex justify-center'>
                         <Map
                             columns={DIMENSION}
@@ -312,11 +314,14 @@ const Astar= () =>{
                             onSetGoal={onSetGoal}
                         />
                     </div>
-                    <div className="flex flex-col gap-5 items-end fixed right-0">
-                        <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={mqttSub}>{isSubed ? 'Subscribed':'Subscribe'}</button>
-                        <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' disabled={isStartSetting} onClick={editStartPosition}>set start</button>
-                        <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' disabled={isGoalSetting} onClick={editGoalPosition}>set goal</button>
-
+                    <div className="flex flex-row gap-5 justify-center fixed bottom-0 z-30 w-10/12 rounded-t-lg bg-slate-900 py-4">
+                        <button className={`px-6 py-1.5 ${connectStatus == 'Connected' ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttConnect}><PiPlugsConnectedFill /><span className='ml-1'>{connectStatus}</span></button>
+                        <button className={`px-6 py-1.5 ${isSubed ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttSub}><MdGetApp/><span className='ml-1'>{isSubed ? 'Subscribed':'Subscribe'}</span></button>
+                        <button className={`px-6 py-1.5 ${isStartSequence ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={moveToLowestCost}><IoMdMove /><span className='ml-1'>move</span></button>
+                        {/* <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={() => window.location.reload()}>reload</button> */}
+                        <button className={`px-6 py-1.5 ${isStartSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isStartSetting} onClick={editStartPosition}><HiCursorArrowRays/><span className='ml-1'>set start</span></button>
+                        <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays/><span className='ml-1'>set goal</span></button>
+                        <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={editGoalPosition}><MdForklift/><span className='ml-1'>Lift Load</span></button>
                     </div>
                 </div>
 
