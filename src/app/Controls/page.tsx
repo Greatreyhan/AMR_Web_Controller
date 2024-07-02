@@ -236,7 +236,7 @@ const Astar= () =>{
 
     const handleLift = () =>{
         setIsLift(!isLift)
-            let msg = `AA5500000000${isLift ? 0:1}0000FF`
+            let msg = `AA5501000000${isLift ? 1:2}0000FF`
             mqttPublish(msg)
             console.log(msg)        
     }
