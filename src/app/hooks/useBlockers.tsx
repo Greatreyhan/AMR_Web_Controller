@@ -30,6 +30,17 @@ export const useBlockers = ({ dimension }: DimensionProps) => {
       .filter(({ x, y }) => x !== dimension - 1 && y !== dimension - 1);
   };
 
+  const setBlockersBasedOnMapState = (mapState: any) => {
+    const blockersInMap: Tile[] = [];
+    mapState.forEach((row: string[], yIndex: number) => {
+      row.forEach((tile: string, xIndex: number) => {
+        if (tile === '-') return;
+        blockersInMap.push({ x: yIndex, y: xIndex });
+      });
+    });
+    setBlockers(blockersInMap);
+  };
+
   const setBlockersBasedOnGeneratedMap = (mapName: string) => {
     const blockersInMap: Tile[] = [];
     maps[mapName].reverse().forEach((row: string[], yIndex: number) => {
@@ -54,5 +65,6 @@ export const useBlockers = ({ dimension }: DimensionProps) => {
     blockers,
     setTileAsBlocker,
     setBlockersBasedOnGeneratedMap,
+    setBlockersBasedOnMapState
   };
 };

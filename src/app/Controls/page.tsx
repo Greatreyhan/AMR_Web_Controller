@@ -17,7 +17,44 @@ import { IoMdMove } from "react-icons/io";
 import { MdForklift } from "react-icons/md";
 
 const Astar= () =>{
+    const [currentMap, setCurrentMap] = useState([
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+    ])
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
+    const parseValue = (highByte:any, lowByte:any) => {
+        const value = (highByte << 8) | lowByte;
+        return highByte & 0x80 ? value - 65536 : value;
+    };
+    
     const parseKinematicPacket = (hexString:string) => {
         // Convert the hex string to a byte array
         const packet = [];
@@ -57,6 +94,40 @@ const Astar= () =>{
         setIsStartSetting(false)
         console.log(KinematicData);
         return KinematicData;
+    }
+    const parseBlockerCoordinate = (hexString:string) => {
+
+        const coordinate_to_block = {
+            n: parseInt(hexString[6]),
+            command: parseInt(hexString[7]),
+            x1: parseValue(hexString[8], hexString[9]),
+            y1: parseValue(hexString[10], hexString[11]),
+            x2: parseValue(hexString[12], hexString[13]),
+            y2: parseValue(hexString[14], hexString[15]),
+        };
+        if(coordinate_to_block.n >= 1) handleAddBlock(coordinate_to_block.y1,coordinate_to_block.x1)
+        if(coordinate_to_block.n >= 2) handleAddBlock(coordinate_to_block.y2,coordinate_to_block.x2)
+        if(coordinate_to_block.command == 1) moveToLowestCost();
+        console.log('blocking coordinate : ',coordinate_to_block);
+        console.log('Current position : ', positionRef.current);
+    }
+
+    const parseBlockerByCurrentCoordinate = (hexString:string) => {
+
+        const coordinate_to_block = {
+            n: parseInt(hexString[6]),
+            command: parseInt(hexString[7]),
+            x1: parseValue(hexString[8], hexString[9]),
+            y1: parseValue(hexString[10], hexString[11]),
+            x2: parseValue(hexString[12], hexString[13]),
+            y2: parseValue(hexString[14], hexString[15]),
+        };
+        if(coordinate_to_block.n >= 1) handleAddBlock(positionRef.current.x+coordinate_to_block.y1,positionRef.current.y+coordinate_to_block.x1)
+        if(coordinate_to_block.n >= 2) handleAddBlock(positionRef.current.x+coordinate_to_block.y2,positionRef.current.y+coordinate_to_block.x2)
+        // Generate new Astar
+        if(coordinate_to_block.command == 1) moveToLowestCost();
+        console.log('blocking coordinate : ',coordinate_to_block);
+        console.log('Current position : ', positionRef.current);
     }
 
     //------------------------------------------------- SETTING MQTT CONNECTION --------------------------------------------------------------------//
@@ -113,11 +184,15 @@ const Astar= () =>{
                 setPayload(payload)
                 setRxMsg(message.toString())
                 const msg = message.toString()
+                console.log(`received message: ${message} from topic: ${topic}`)
                 if(msg[4] == '1' && msg[5] == '5'){
                     parseKinematicPacket(msg)
                 }
+                else if(msg[4] == '2' && msg[5] == '1'){
+                    parseBlockerByCurrentCoordinate(msg)
+                }
                 // ---------------------------------------------------- HANDLE COORDINATE ------------------------------------------------------------------------//
-                console.log(`received message: ${message} from topic: ${topic}`)
+                
             })
         }
     }, [client])
@@ -192,6 +267,7 @@ const Astar= () =>{
         setBlockersOnMap,
         setTileAsBlocker,
         setBlockersBasedOnGeneratedMap,
+        setBlockersBasedOnMapState,
     } = useBlockers({ dimension: DIMENSION });
     const {
         open,
@@ -227,7 +303,6 @@ const Astar= () =>{
                 else msg += `${step.x}:${step.y}FF`
             })
             mqttPublish(msg)
-            console.log(msg)
             setIsStartSequence(false)
         }
 
@@ -285,16 +360,52 @@ const Astar= () =>{
 
     useEffect(() => {
         // update map
-        setBlockersBasedOnGeneratedMap('blank')
+        setBlockersBasedOnMapState(currentMap)
     }, [])
 
-    // useEffect(()=>{
-    //     // Connect to MQTT
-    //     mqttConnect();
+    const handleAddBlock = (x:number,y:number) =>{
+        let newMap = currentMap
+        newMap[x][y] = "#"
+        setCurrentMap(newMap)
+        setBlockersBasedOnMapState(currentMap)
+    }
 
-    //     // Subscribe to topic
-    //     mqttSub();
-    // },[])
+    const handleRemoveBlock = (x:number,y:number) =>{
+        let newMap = currentMap
+        newMap[x][y] = "-"
+        setCurrentMap(newMap)
+        setBlockersBasedOnMapState(currentMap)
+    }
+
+    const handleSetRackFull = (xcenter:number, ycenter:number) =>{
+        let newMap = currentMap
+        newMap[xcenter-1][ycenter+1] = "#"
+        newMap[xcenter][ycenter+1] = "#"
+        newMap[xcenter+1][ycenter+1] = "#"
+        newMap[xcenter-1][ycenter] = "#"
+        newMap[xcenter][ycenter] = "#"
+        newMap[xcenter+1][ycenter] = "#"
+        newMap[xcenter-1][ycenter-1] = "#"
+        newMap[xcenter][ycenter-1] = "#"
+        newMap[xcenter+1][ycenter-1] = "#"
+        setCurrentMap(newMap)
+        setBlockersBasedOnMapState(currentMap)
+    }
+
+    const handleSetRackFree = (xcenter:number, ycenter:number) =>{
+        let newMap = currentMap
+        newMap[xcenter-1][ycenter+1] = "#"
+        newMap[xcenter][ycenter+1] = "-"
+        newMap[xcenter+1][ycenter+1] = "#"
+        newMap[xcenter-1][ycenter] = "-"
+        newMap[xcenter][ycenter] = "-"
+        newMap[xcenter+1][ycenter] = "-"
+        newMap[xcenter-1][ycenter-1] = "#"
+        newMap[xcenter][ycenter-1] = "-"
+        newMap[xcenter+1][ycenter-1] = "#"
+        setCurrentMap(newMap)
+        setBlockersBasedOnMapState(currentMap)
+    }
 
     return (
         <div className="Astar pt-32 flex flex-col justify-center items-center w-full">
@@ -305,28 +416,29 @@ const Astar= () =>{
                 <div className="Astar-content flex justify-center w-full">
  
                     <div className='flex-1 flex justify-center'>
-                        <Map
-                            columns={DIMENSION}
-                            rows={DIMENSION}
-                            blockers={blockers}
-                            open={open}
-                            road={road}
-                            path={path}
-                            goal={goal}
-                            userPosition={player}
-                            setTileAsBlocker={setTileAsBlocker}
-                            isSetting={isSetting}
-                            isStartSetting={isStartSetting}
-                            isGoalSetting={isGoalSetting}
-                            onSetStart={onSetStart}
-                            onSetGoal={onSetGoal}
-                        />
+                        <div className='relative'>
+                            <Map
+                                columns={DIMENSION}
+                                rows={DIMENSION}
+                                blockers={blockers}
+                                open={open}
+                                road={road}
+                                path={path}
+                                goal={goal}
+                                userPosition={player}
+                                setTileAsBlocker={setTileAsBlocker}
+                                isSetting={isSetting}
+                                isStartSetting={isStartSetting}
+                                isGoalSetting={isGoalSetting}
+                                onSetStart={onSetStart}
+                                onSetGoal={onSetGoal}
+                            />
+                        </div>
                     </div>
                     <div className="flex flex-row gap-5 justify-center fixed bottom-0 z-30 w-10/12 rounded-t-lg bg-slate-900 py-4">
                         <button className={`px-6 py-1.5 ${connectStatus == 'Connected' ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttConnect}><PiPlugsConnectedFill /><span className='ml-1'>{connectStatus}</span></button>
                         <button className={`px-6 py-1.5 ${isSubed ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttSub}><MdGetApp/><span className='ml-1'>{isSubed ? 'Subscribed':'Subscribe'}</span></button>
                         <button className={`px-6 py-1.5 ${isStartSequence ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={moveToLowestCost}><IoMdMove /><span className='ml-1'>move</span></button>
-                        {/* <button className='px-6 py-1.5 bg-amber-500 uppercase font-semibold rounded' onClick={() => window.location.reload()}>reload</button> */}
                         <button className={`px-6 py-1.5 ${isStartSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isStartSetting} onClick={editStartPosition}><HiCursorArrowRays/><span className='ml-1'>set start</span></button>
                         <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays/><span className='ml-1'>set goal</span></button>
                         <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`}  onClick={handleLift}><MdForklift/><span className='ml-1'>Lift Load</span></button>

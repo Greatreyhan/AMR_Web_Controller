@@ -20,10 +20,6 @@
     font-size: 10px;
     background-color: white !important;
 }
-
-
-
-
 .is_open {
     background: rgba(217, 119, 6, .2);
 }
@@ -31,11 +27,9 @@
 .is_road {
     background: #61dafb;
 }
-
 .is_goal {
     background: rgb(7, 89, 133);
 }
-
 .is_user {
     background: rgb(245, 158, 11) ;
 }

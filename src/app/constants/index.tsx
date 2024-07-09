@@ -1,3 +1,3 @@
-export const START = { x: 2, y: 2 };
-export const GOAL = { x: 2, y: 3 };
+export const START = { x: 1, y: 1 };
+export const GOAL = { x: 3, y: 3 };
 export const DIMENSION = 30;
