@@ -114,19 +114,43 @@ const Astar= () =>{
 
     const parseBlockerByCurrentCoordinate = (hexString:string) => {
 
-        const coordinate_to_block = {
-            n: parseInt(hexString[6]),
-            command: parseInt(hexString[7]),
-            x1: parseValue(hexString[8], hexString[9]),
-            y1: parseValue(hexString[10], hexString[11]),
-            x2: parseValue(hexString[12], hexString[13]),
-            y2: parseValue(hexString[14], hexString[15]),
-        };
-        if(coordinate_to_block.n >= 1) handleAddBlock(positionRef.current.x+coordinate_to_block.y1,positionRef.current.y+coordinate_to_block.x1)
-        if(coordinate_to_block.n >= 2) handleAddBlock(positionRef.current.x+coordinate_to_block.y2,positionRef.current.y+coordinate_to_block.x2)
+        const n = parseInt(hexString[6]+hexString[7])
+        const command = parseInt(hexString[8])
+        for(let i = 0; i < n*6; i+=6){
+            
+            let posx = 0
+            if(hexString[9+i] == 'N')  posx = positionRef.current.y-parseInt(hexString[10+i]+hexString[11+i])
+            else if(hexString[9+i] == 'P') posx = positionRef.current.y+parseInt(hexString[10+i]+hexString[11+i])
+            let posy = 0
+            if(hexString[12+i] == 'N')  posy = positionRef.current.x-parseInt(hexString[13+i]+hexString[14+i])
+            else if(hexString[12+i] == 'P')  posy = positionRef.current.x+parseInt(hexString[13+i]+hexString[14+i])
+            console.log('coordinate :',posx,posy,i)
+            handleAddBlock(posy,posx)
+        }
         // Generate new Astar
-        if(coordinate_to_block.command == 1) moveToLowestCost();
-        console.log('blocking coordinate : ',coordinate_to_block);
+        if(command == 1) moveToLowestCost();
+        console.log('blocking coordinate : ',n);
+        console.log('Current position : ', positionRef.current);
+    }
+
+    const parseFreeBlockByCurrentCoordinate = (hexString:string) => {
+
+        const n = parseInt(hexString[6]+hexString[7])
+        const command = parseInt(hexString[8])
+        for(let i = 0; i < n*6; i+=6){
+            
+            let posx = 0
+            if(hexString[9+i] == 'N')  posx = positionRef.current.y-parseInt(hexString[10+i]+hexString[11+i])
+            else if(hexString[9+i] == 'P') posx = positionRef.current.y+parseInt(hexString[10+i]+hexString[11+i])
+            let posy = 0
+            if(hexString[12+i] == 'N')  posy = positionRef.current.x-parseInt(hexString[13+i]+hexString[14+i])
+            else if(hexString[12+i] == 'P')  posy = positionRef.current.x+parseInt(hexString[13+i]+hexString[14+i])
+            console.log('coordinate :',posx,posy,i)
+            handleRemoveBlock(posy,posx)
+        }
+        // Generate new Astar
+        if(command == 1) moveToLowestCost();
+        console.log('blocking coordinate : ',n);
         console.log('Current position : ', positionRef.current);
     }
 
@@ -191,6 +215,10 @@ const Astar= () =>{
                 else if(msg[4] == '2' && msg[5] == '1'){
                     parseBlockerByCurrentCoordinate(msg)
                 }
+                else if(msg[4] == '2' && msg[5] == '1'){
+                    parseFreeBlockByCurrentCoordinate(msg)
+                }
+                
                 // ---------------------------------------------------- HANDLE COORDINATE ------------------------------------------------------------------------//
                 
             })
@@ -259,6 +287,7 @@ const Astar= () =>{
 
     const [count, setCount] = useState(0); // frames
     const [withNeighbourEvaluation, setWithNeighbourEvaluation] = useState(true);
+    const [cmdId, setCmdId] = useState(1);
 
     const { start, goal, setStart, setGoal, isStartSetting, isGoalSetting, setIsGoalSetting, setIsStartSetting } = useGoalAndStart();
     const { player, move, extendUserData } = usePlayer(start);
@@ -309,10 +338,16 @@ const Astar= () =>{
     }, [positionRef.current])
     /* eslint-enable */
 
+    const decimalToHex = (n:number) => {
+        return ('0' + n.toString(16)).slice(-2).toUpperCase();
+    }
+
     const handleLift = () =>{
         setIsLift(!isLift)
-            let msg = `AA5501000000${isLift ? 2:1}0000FF`
+            let idcmd = decimalToHex(cmdId) 
+            let msg = `AA55${idcmd}000000${isLift ? 2:1}0000FF`
             mqttPublish(msg)
+            setCmdId(cmdId+1);
             console.log(msg)        
     }
 
