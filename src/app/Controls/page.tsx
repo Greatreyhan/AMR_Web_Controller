@@ -86,8 +86,8 @@ const Astar= () =>{
         };
         // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
         const pos_data = {
-            x:Math.round(Sy/100),
-            y:Math.round(Sx/100)
+            x:Math.round(Sy/500),
+            y:Math.round(Sx/500)
         }
         clearAll({ ...pos_data, ...extendUserData });
         setStart(pos_data)
@@ -331,6 +331,7 @@ const Astar= () =>{
                 if((path.length - i)>1) msg += `${step.x}:${step.y}|`
                 else msg += `${step.x}:${step.y}FF`
             })
+            console.log(msg)
             mqttPublish(msg)
             setIsStartSequence(false)
         }
