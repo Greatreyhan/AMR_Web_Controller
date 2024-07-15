@@ -24,8 +24,10 @@ interface MapProps {
   isSetting: boolean;
   isGoalSetting: boolean;
   isStartSetting: boolean;
+  setIsAuto : any;
   onSetGoal: any;
   onSetStart: any;
+  setCoordinateSet: any;
 }
 
 export const Map: React.FC<MapProps> = ({
@@ -41,6 +43,8 @@ export const Map: React.FC<MapProps> = ({
   isSetting,
   isGoalSetting,
   isStartSetting,
+  setIsAuto,
+  setCoordinateSet,
   onSetGoal,
   onSetStart
 }) => {
@@ -54,21 +58,24 @@ export const Map: React.FC<MapProps> = ({
     <div className="">
       {rowsToRender.map((_, index) => (
         <Row
-          key={index}
-          x={index}
-          columns={columns}
-          blockers={getRowValue(blockers, index)}
-          open={getRowValue(open, index)}
-          road={getRowValue(road, index)}
-          path={getRowValue(path, index)}
-          goal={goal.x === index ? goal : 0}
-          userPosition={userPosition}
-          setTileAsBlocker={setTileAsBlocker}
-          isSetting={isSetting}
-          isStartSetting={isStartSetting}
-          isGoalSetting={isGoalSetting}
-          onSetStart={onSetStart}
-          onSetGoal={onSetGoal}
+        key={index}
+        x={index}
+        columns={columns}
+        blockers={getRowValue(blockers, index)}
+        open={getRowValue(open, index)}
+        road={getRowValue(road, index)}
+        path={getRowValue(path, index)}
+        goal={goal.x === index ? goal : 0}
+        userPosition={userPosition}
+        setTileAsBlocker={setTileAsBlocker}
+        isSetting={isSetting}
+        isStartSetting={isStartSetting}
+        isGoalSetting={isGoalSetting}
+        // custom params
+        setIsAuto={setIsAuto}
+        setCoordinateSet={setCoordinateSet}
+        onSetStart={onSetStart}
+        onSetGoal={onSetGoal}
         />
       )).reverse()}
     </div>
