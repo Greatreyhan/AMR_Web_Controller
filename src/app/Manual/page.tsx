@@ -17,141 +17,84 @@ import { IoMdMove } from "react-icons/io";
 import { MdForklift } from "react-icons/md";
 import Card from './Card';
 
-const Astar= () =>{
+const Astar = () => {
     const [currentMap, setCurrentMap] = useState([
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
-        ['-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-','-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
+        ['-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-', '-'],
     ])
-    //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
-    const parseValue = (highByte:any, lowByte:any) => {
-        const value = (highByte << 8) | lowByte;
-        return highByte & 0x80 ? value - 65536 : value;
-    };
-    
-    const parseKinematicPacket = (hexString:string) => {
-        // Convert the hex string to a byte array
-        const packet = [];
-        for (let i = 0; i < hexString.length; i += 2) {
-            packet.push(parseInt(hexString.substr(i, 2), 16));
-        }
-    
-        // Extract and parse kinematic values
-        let Sx = ((packet[3] << 8) | packet[4]);
-        Sx = (packet[3] & 0x80) ? 0 : Sx;
-        let Sy = ((packet[5] << 8) | packet[6]);
-        Sy = (packet[5] & 0x80) ? 0 : Sy;
-        let St = ((packet[7] << 8) | packet[8]);
-        St = (packet[7] & 0x80) ? 0 : St;
-        let Vx = ((packet[9] << 8) | packet[10]);
-        Vx = (packet[9] & 0x80) ? 0 : Vx;
-        let Vy = ((packet[11] << 8) | packet[12]);
-        Vy = (packet[11] & 0x80) ? 0 : Vy;
-        let Vt = ((packet[13] << 8) | packet[14]);
-        Vt = (packet[13] & 0x80) ? 0 : Vt;
-    
-        const KinematicData = {
-            Sx,
-            Sy,
-            St,
-            Vx,
-            Vy,
-            Vt
-        };
-        // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
-        const pos_data = {
-            x:Math.round(Sy/500),
-            y:Math.round(Sx/500)
-        }
-        clearAll({ ...pos_data, ...extendUserData });
-        setStart(pos_data)
-        setIsStartSetting(false)
-        return KinematicData;
-    }
-    const parseBlockerCoordinate = (hexString:string) => {
+    const [count, setCount] = useState(0); // frames
+    const [withNeighbourEvaluation, setWithNeighbourEvaluation] = useState(true);
+    const [cmdId, setCmdId] = useState(1);
 
-        const coordinate_to_block = {
-            n: parseInt(hexString[6]),
-            command: parseInt(hexString[7]),
-            x1: parseValue(hexString[8], hexString[9]),
-            y1: parseValue(hexString[10], hexString[11]),
-            x2: parseValue(hexString[12], hexString[13]),
-            y2: parseValue(hexString[14], hexString[15]),
-        };
-        if(coordinate_to_block.n >= 1) handleAddBlock(coordinate_to_block.y1,coordinate_to_block.x1)
-        if(coordinate_to_block.n >= 2) handleAddBlock(coordinate_to_block.y2,coordinate_to_block.x2)
-        if(coordinate_to_block.command == 1) moveToLowestCost();
-        console.log('blocking coordinate : ',coordinate_to_block);
-        console.log('Current position : ', positionRef.current);
-    }
+    const { start, goal, setStart, setGoal, isStartSetting, isGoalSetting, setIsGoalSetting, setIsStartSetting } = useGoalAndStart();
+    const { player, move, extendUserData } = usePlayer(start);
+    const {
+        blockers,
+        setBlockersOnMap,
+        setTileAsBlocker,
+        setBlockersBasedOnGeneratedMap,
+        setBlockersBasedOnMapState,
+    } = useBlockers({ dimension: DIMENSION });
+    const {
+        open,
+        road,
+        path,
+        setFinalPath,
+        isGoalReached,
+        clearAll
+    } = useRoad(
+        goal,
+        player,
+        blockers,
+        count,
+        move,
+        withNeighbourEvaluation
+    );
+    const [isSetting, setIsSetting] = useState(false);
+    const positionRef = useRef(player)
 
-    const parseBlockerByCurrentCoordinate = (hexString:string) => {
+    //////////////////////////////////////////////// Inference Params //////////////////////////////////
+    const [isAuto, setIsAuto] = useState(false)
+    const [coordinateSet, setCoordinateSet] = useState({
+        x: 0,
+        y: 0
+    })
+    const [listMsg, setListMsg] = useState<string[]>([])
+    const [listGoal, setListGoal] = useState<any[]>([[0, 0]])
+    const [listActuator, setListActuator] = useState<any[]>([])
+    const [isMoving, setIsMoving] = useState(false)
+    const [currentMove, setCurrentMove] = useState(0)
+    const [showCard, setShowCard] = useState(false)
+    const [isDistracted, setIsDistracted] = useState(false)
 
-        const n = parseInt(hexString[6]+hexString[7])
-        const command = parseInt(hexString[8])
-        for(let i = 0; i < n*6; i+=6){
-            let posx = 0
-            if(hexString[9+i] == 'N')  posx = start.y-parseInt(hexString[10+i]+hexString[11+i])
-            else if(hexString[9+i] == 'P') posx = start.y+parseInt(hexString[10+i]+hexString[11+i])
-            let posy = 0
-            if(hexString[12+i] == 'N')  posy = start.x-parseInt(hexString[13+i]+hexString[14+i])
-            else if(hexString[12+i] == 'P')  posy = start.x+parseInt(hexString[13+i]+hexString[14+i])
-            console.log('coordinate :',posx,posy,i)
-            handleAddBlock(posy,posx)
-        }
-        // Generate new Astar
-        if(command == 1) moveToLowestCost();
-        console.log('blocking coordinate : ',n);
-        console.log('Current position : ', start);
-    }
-
-    const parseFreeBlockByCurrentCoordinate = (hexString:string) => {
-
-        const n = parseInt(hexString[6]+hexString[7])
-        const command = parseInt(hexString[8])
-        for(let i = 0; i < n*6; i+=6){
-            
-            let posx = 0
-            if(hexString[9+i] == 'N')  posx = start.y-parseInt(hexString[10+i]+hexString[11+i])
-            else if(hexString[9+i] == 'P') posx = start.y+parseInt(hexString[10+i]+hexString[11+i])
-            let posy = 0
-            if(hexString[12+i] == 'N')  posy = start.x-parseInt(hexString[13+i]+hexString[14+i])
-            else if(hexString[12+i] == 'P')  posy = start.x+parseInt(hexString[13+i]+hexString[14+i])
-            console.log('coordinate :',posx,posy,i)
-            handleRemoveBlock(posy,posx)
-        }
-        // Generate new Astar
-        if(command == 1) moveToLowestCost();
-        console.log('blocking coordinate : ',n);
-        console.log('Current position : ', positionRef.current);
-    }
 
     //------------------------------------------------- SETTING MQTT CONNECTION --------------------------------------------------------------------//
 
@@ -169,7 +112,52 @@ const Astar= () =>{
     const [isStartSequence, setIsStartSequence] = useState(false);
     const [isLift, setIsLift] = useState(false)
     const [isFirst, setIsFirst] = useState(false)
+    const [isNewGenerated, setIsNewGenerated] = useState(false)
+    //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
+    const parseValue = (highByte: any, lowByte: any) => {
+        const value = (highByte << 8) | lowByte;
+        return highByte & 0x80 ? value - 65536 : value;
+    };
 
+    const parseKinematicPacket = (hexString: string) => {
+        // Convert the hex string to a byte array
+        const packet = [];
+        for (let i = 0; i < hexString.length; i += 2) {
+            packet.push(parseInt(hexString.substr(i, 2), 16));
+        }
+
+        // Extract and parse kinematic values
+        let Sx = ((packet[3] << 8) | packet[4]);
+        Sx = (packet[3] & 0x80) ? 0 : Sx;
+        let Sy = ((packet[5] << 8) | packet[6]);
+        Sy = (packet[5] & 0x80) ? 0 : Sy;
+        let St = ((packet[7] << 8) | packet[8]);
+        St = (packet[7] & 0x80) ? 0 : St;
+        let Vx = ((packet[9] << 8) | packet[10]);
+        Vx = (packet[9] & 0x80) ? 0 : Vx;
+        let Vy = ((packet[11] << 8) | packet[12]);
+        Vy = (packet[11] & 0x80) ? 0 : Vy;
+        let Vt = ((packet[13] << 8) | packet[14]);
+        Vt = (packet[13] & 0x80) ? 0 : Vt;
+
+        const KinematicData = {
+            Sx,
+            Sy,
+            St,
+            Vx,
+            Vy,
+            Vt
+        };
+        // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
+        const pos_data = {
+            x: Math.round(Sy / 500),
+            y: Math.round(Sx / 500)
+        }
+        clearAll({ ...pos_data, ...extendUserData });
+        setStart(pos_data)
+        setIsStartSetting(false)
+        return KinematicData;
+    }
 
     const mqttConnect = () => {
         // Host Setting 
@@ -186,44 +174,6 @@ const Astar= () =>{
         const mqttClient = mqtt.connect(url, options);
         setClient(mqttClient)
     }
-
-    useEffect(() => {
-        if (client) {
-            client.on('connect', () => {
-                setConnectStatus('Connected')
-                console.log('connection successful')
-            })
-
-            client.on('error', (err) => {
-                console.error('Connection error: ', err)
-                client.end()
-            })
-
-            client.on('reconnect', () => {
-                setConnectStatus('Reconnecting')
-            })
-
-            client.on('message', (topic, message) => {
-                const payload = { topic, message: message.toString() }
-                setPayload(payload)
-                setRxMsg(message.toString())
-                const msg = message.toString()
-                console.log(`received message: ${message} from topic: ${topic}`)
-                if(msg[4] == '1' && msg[5] == '5'){
-                    parseKinematicPacket(msg)
-                }
-                else if(msg[4] == '2' && msg[5] == '1'){
-                    parseBlockerByCurrentCoordinate(msg)
-                }
-                else if(msg[4] == '2' && msg[5] == '1'){
-                    parseFreeBlockByCurrentCoordinate(msg)
-                }
-                
-                // ---------------------------------------------------- HANDLE COORDINATE ------------------------------------------------------------------------//
-                
-            })
-        }
-    }, [client])
 
     const mqttDisconnect = () => {
         if (client) {
@@ -281,53 +231,9 @@ const Astar= () =>{
             })
         }
     }
-    
+
 
     //------------------------------------------------- SETTING ASTAR ALGORITHM --------------------------------------------------------------------//
-
-    const [count, setCount] = useState(0); // frames
-    const [withNeighbourEvaluation, setWithNeighbourEvaluation] = useState(true);
-    const [cmdId, setCmdId] = useState(1);
-
-    const { start, goal, setStart, setGoal, isStartSetting, isGoalSetting, setIsGoalSetting, setIsStartSetting } = useGoalAndStart();
-    const { player, move, extendUserData } = usePlayer(start);
-    const {
-        blockers,
-        setBlockersOnMap,
-        setTileAsBlocker,
-        setBlockersBasedOnGeneratedMap,
-        setBlockersBasedOnMapState,
-    } = useBlockers({ dimension: DIMENSION });
-    const {
-        open,
-        road,
-        path,
-        setFinalPath,
-        isGoalReached,
-        clearAll
-    } = useRoad(
-        goal,
-        player,
-        blockers,
-        count,
-        move,
-        withNeighbourEvaluation
-    );
-    const [isSetting, setIsSetting] = useState(false);
-    const positionRef = useRef(player)
-
-    //////////////////////////////////////////////// Inference Params //////////////////////////////////
-    const [isAuto, setIsAuto] = useState(false)
-    const [coordinateSet, setCoordinateSet] = useState({
-        x:0,
-        y:0
-    })
-    const [listMsg, setListMsg] = useState<string[]>([])
-    const [listGoal, setListGoal] = useState<any[]>([[0,0]])
-    const [listActuator, setListActuator] = useState<any[]>([])
-    const [isMoving, setIsMoving] = useState(false)
-    const [currentMove, setCurrentMove] = useState(0)
-    const [showCard, setShowCard] = useState(false)
 
     useEffect(() => {
         positionRef.current = player;
@@ -339,14 +245,23 @@ const Astar= () =>{
     useEffect(() => {
         //////////////////////////////////////////////// Inference to send the path //////////////////////////////////
         if (isGoalReached(positionRef.current)) {
-            if(!isFirst){
+            if (!isFirst) {
                 clearAll(start);
                 setIsFirst(true)
             }
-            else{
-                let msg = `A55A${path.length+1}|${goal.x}:${goal.y}|`
-                path.map((step,i)=>{
-                    if((path.length - i)>1) msg += `${step.x}:${step.y}|`
+            else if (isDistracted) {
+                let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
+                path.map((step, i) => {
+                    if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
+                    else msg += `${step.x}:${step.y}FF`
+                })
+                mqttPublish(msg);
+                setIsDistracted(false);
+            }
+            else if (isFirst && !isDistracted) {
+                let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
+                path.map((step, i) => {
+                    if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
                     else msg += `${step.x}:${step.y}FF`
                 })
                 setListMsg([...listMsg, msg])
@@ -354,27 +269,27 @@ const Astar= () =>{
                 setIsStartSequence(false)
             }
         }
-        if(isMoving){
+        if (isMoving) {
             // Send Data in Sequence
-            mqttPublish(listMsg[currentMove*2])
-            setCurrentMove(currentMove+1)
+            mqttPublish(listMsg[currentMove * 2])
+            setCurrentMove(currentMove + 1)
             setIsMoving(false)
         }
 
         // Mencapai posisi tujuan
-        if(listGoal[currentMove] && currentMove != 0){
-            if(positionRef.current.x == listGoal[currentMove][0]&& positionRef.current.y == listGoal[currentMove][1]){
+        if (listGoal[currentMove] && currentMove != 0) {
+            if (positionRef.current.x == listGoal[currentMove][0] && positionRef.current.y == listGoal[currentMove][1]) {
 
                 // Use Actuator ?
-                if(listActuator[currentMove] != listActuator[currentMove-1]){
-                    if(listActuator[currentMove] == 1){
+                if (listActuator[currentMove] != listActuator[currentMove - 1]) {
+                    if (listActuator[currentMove] == 1) {
                         setIsLift(true)
                         handleLift()
                         setTimeout(() => {
                             console.log('Pengangkatan Berhasil!');
                         }, 20000);
                     }
-                    else if(listActuator[currentMove] == 0){
+                    else if (listActuator[currentMove] == 0) {
                         setIsLift(false)
                         handleLift()
                         setTimeout(() => {
@@ -382,21 +297,34 @@ const Astar= () =>{
                         }, 20000);
                     }
                 }
-                
+
 
                 setIsMoving(true)
             }
         }
-
-    }, [positionRef.current,isMoving])
+        if (isDistracted) {
+            // Set Goal
+            if(isDistracted){
+                let newCoordinate = {
+                    x: listGoal[currentMove][0],
+                    y: listGoal[currentMove][1],
+                }
     
+                clearAll(start);
+                setGoal(newCoordinate)
+                setIsStartSetting(false);
+                setIsSetting(false);
+                setIsGoalSetting(true);
+                moveToLowestCost();
+            }
+        }
+
+    }, [positionRef.current, isMoving, isDistracted])
+
     useEffect(() => {
-        if(isAuto){
-            // console.log(listMsg)
-            // console.log(listGoal)
-            // console.log(listActuator)
+        if (isAuto && !isDistracted) {
             setGoal(coordinateSet)
-            setListGoal([...listGoal,[coordinateSet.x,coordinateSet.y]])
+            setListGoal([...listGoal, [coordinateSet.x, coordinateSet.y]])
             setListActuator([...listActuator, 1])
             setIsStartSetting(false);
             setIsSetting(false);
@@ -407,19 +335,114 @@ const Astar= () =>{
         }
         setIsAuto(false)
 
-    }, [isAuto,positionRef.current])
+    }, [isAuto, positionRef.current])
 
-    const decimalToHex = (n:number) => {
+    useEffect(() => {
+        if (client) {
+            client.on('connect', () => {
+                setConnectStatus('Connected')
+                console.log('connection successful')
+            })
+
+            client.on('error', (err) => {
+                console.error('Connection error: ', err)
+                client.end()
+            })
+
+            client.on('reconnect', () => {
+                setConnectStatus('Reconnecting')
+            })
+
+            client.on('message', (topic, message) => {
+                const payload = { topic, message: message.toString() }
+                setPayload(payload)
+                setRxMsg(message.toString())
+                const msg = message.toString()
+                console.log(`received message: ${message} from topic: ${topic}`)
+                if (msg[4] == '1' && msg[5] == '5') {
+                    parseKinematicPacket(msg)
+                }
+                else if (msg[4] == '2' && msg[5] == '1') {
+                    parseBlockerByCurrentCoordinate(msg)
+                    setIsDistracted(true)
+
+                }
+                else if (msg[4] == '2' && msg[5] == '2') {
+                    parseFreeBlockByCurrentCoordinate(msg)
+                    setIsDistracted(true)
+                }
+
+                // ---------------------------------------------------- HANDLE COORDINATE ------------------------------------------------------------------------//
+
+            })
+        }
+    }, [client])
+
+
+    const parseBlockerByCurrentCoordinate = (hexString: string) => {
+
+        const n = parseInt(hexString[6] + hexString[7])
+        const command = parseInt(hexString[8])
+        for (let i = 0; i < n * 6; i += 6) {
+            let posx = 0
+            if (hexString[9 + i] == 'N') posx = start.y - parseInt(hexString[10 + i] + hexString[11 + i])
+            else if (hexString[9 + i] == 'P') posx = start.y + parseInt(hexString[10 + i] + hexString[11 + i])
+            let posy = 0
+            if (hexString[12 + i] == 'N') posy = start.x - parseInt(hexString[13 + i] + hexString[14 + i])
+            else if (hexString[12 + i] == 'P') posy = start.x + parseInt(hexString[13 + i] + hexString[14 + i])
+            console.log('coordinate :', posx, posy, i)
+            handleAddBlock(posy, posx)
+        }
+
+        if(command == 1){
+            setIsNewGenerated(true)
+        }
+        else{
+            setIsNewGenerated(false)
+        }
+
+        // Generate new Astar
+        console.log('blocking coordinate : ', n);
+        console.log('Current position : ', start);
+    }
+
+    const parseFreeBlockByCurrentCoordinate = (hexString: string) => {
+
+        const n = parseInt(hexString[6] + hexString[7])
+        const command = parseInt(hexString[8])
+        for (let i = 0; i < n * 6; i += 6) {
+
+            let posx = 0
+            if (hexString[9 + i] == 'N') posx = start.y - parseInt(hexString[10 + i] + hexString[11 + i])
+            else if (hexString[9 + i] == 'P') posx = start.y + parseInt(hexString[10 + i] + hexString[11 + i])
+            let posy = 0
+            if (hexString[12 + i] == 'N') posy = start.x - parseInt(hexString[13 + i] + hexString[14 + i])
+            else if (hexString[12 + i] == 'P') posy = start.x + parseInt(hexString[13 + i] + hexString[14 + i])
+            console.log('coordinate :', posx, posy, i)
+            handleRemoveBlock(posy, posx)
+        }
+
+        if (command == 1) {
+            setIsNewGenerated(true)
+        }
+        else{
+            setIsNewGenerated(false)
+        }
+        console.log('blocking coordinate : ', n);
+        console.log('Current position : ', positionRef.current);
+    }
+
+    const decimalToHex = (n: number) => {
         return ('0' + n.toString(16)).slice(-2).toUpperCase();
     }
 
-    const handleLift = () =>{
+    const handleLift = () => {
         setIsLift(!isLift)
-            let idcmd = decimalToHex(cmdId) 
-            let msg = `AA55${idcmd}000000${isLift ? 2:1}0000FF`
-            mqttPublish(msg)
-            setCmdId(cmdId+1);
-            console.log(msg)        
+        let idcmd = decimalToHex(cmdId)
+        let msg = `AA55${idcmd}000000${isLift ? 2 : 1}0000FF`
+        mqttPublish(msg)
+        setCmdId(cmdId + 1);
+        console.log(msg)
     }
 
     const moveByOneTile = () => setCount((prevState) => prevState + 1);
@@ -462,6 +485,7 @@ const Astar= () =>{
         setIsGoalSetting(true);
     }
 
+
     //////////////////////////////////////////////////////////// STARTING POINT ////////////////////////////////////////////////////////
 
     useEffect(() => {
@@ -469,46 +493,46 @@ const Astar= () =>{
         setBlockersBasedOnMapState(currentMap)
     }, [])
 
-    const handleAddBlock = (x:number,y:number) =>{
+    const handleAddBlock = (x: number, y: number) => {
         let newMap = currentMap
         newMap[x][y] = "#"
         setCurrentMap(newMap)
         setBlockersBasedOnMapState(currentMap)
     }
 
-    const handleRemoveBlock = (x:number,y:number) =>{
+    const handleRemoveBlock = (x: number, y: number) => {
         let newMap = currentMap
         newMap[x][y] = "-"
         setCurrentMap(newMap)
         setBlockersBasedOnMapState(currentMap)
     }
 
-    const handleSetRackFull = (xcenter:number, ycenter:number) =>{
+    const handleSetRackFull = (xcenter: number, ycenter: number) => {
         let newMap = currentMap
-        newMap[xcenter-1][ycenter+1] = "#"
-        newMap[xcenter][ycenter+1] = "#"
-        newMap[xcenter+1][ycenter+1] = "#"
-        newMap[xcenter-1][ycenter] = "#"
+        newMap[xcenter - 1][ycenter + 1] = "#"
+        newMap[xcenter][ycenter + 1] = "#"
+        newMap[xcenter + 1][ycenter + 1] = "#"
+        newMap[xcenter - 1][ycenter] = "#"
         newMap[xcenter][ycenter] = "#"
-        newMap[xcenter+1][ycenter] = "#"
-        newMap[xcenter-1][ycenter-1] = "#"
-        newMap[xcenter][ycenter-1] = "#"
-        newMap[xcenter+1][ycenter-1] = "#"
+        newMap[xcenter + 1][ycenter] = "#"
+        newMap[xcenter - 1][ycenter - 1] = "#"
+        newMap[xcenter][ycenter - 1] = "#"
+        newMap[xcenter + 1][ycenter - 1] = "#"
         setCurrentMap(newMap)
         setBlockersBasedOnMapState(currentMap)
     }
 
-    const handleSetRackFree = (xcenter:number, ycenter:number) =>{
+    const handleSetRackFree = (xcenter: number, ycenter: number) => {
         let newMap = currentMap
-        newMap[xcenter-1][ycenter+1] = "#"
-        newMap[xcenter][ycenter+1] = "-"
-        newMap[xcenter+1][ycenter+1] = "#"
-        newMap[xcenter-1][ycenter] = "-"
+        newMap[xcenter - 1][ycenter + 1] = "#"
+        newMap[xcenter][ycenter + 1] = "-"
+        newMap[xcenter + 1][ycenter + 1] = "#"
+        newMap[xcenter - 1][ycenter] = "-"
         newMap[xcenter][ycenter] = "-"
-        newMap[xcenter+1][ycenter] = "-"
-        newMap[xcenter-1][ycenter-1] = "#"
-        newMap[xcenter][ycenter-1] = "-"
-        newMap[xcenter+1][ycenter-1] = "#"
+        newMap[xcenter + 1][ycenter] = "-"
+        newMap[xcenter - 1][ycenter - 1] = "#"
+        newMap[xcenter][ycenter - 1] = "-"
+        newMap[xcenter + 1][ycenter - 1] = "#"
         setCurrentMap(newMap)
         setBlockersBasedOnMapState(currentMap)
     }
@@ -517,13 +541,13 @@ const Astar= () =>{
         <div className="Astar pt-32 flex flex-col justify-center items-center w-full">
             {showCard ?
                 <Card listActuator={listActuator} setListActuator={setListActuator} setShowCard={setShowCard} />
-            :null}
+                : null}
             <LeftNav rxMsg={rxMsg} currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
             <RightNav rxMsg={rxMsg} />
             <div className="Astar-header flex justify-center w-full">
 
                 <div className="Astar-content flex justify-center w-full">
- 
+
                     <div className='flex-1 flex justify-center'>
                         <div className='relative'>
                             <Map
@@ -548,11 +572,11 @@ const Astar= () =>{
                     </div>
                     <div className="flex flex-row gap-5 justify-center fixed bottom-0 z-30 w-10/12 rounded-t-lg bg-slate-900 py-4">
                         <button className={`px-6 py-1.5 ${connectStatus == 'Connected' ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttConnect}><PiPlugsConnectedFill /><span className='ml-1'>{connectStatus}</span></button>
-                        <button className={`px-6 py-1.5 ${isSubed ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttSub}><MdGetApp/><span className='ml-1'>{isSubed ? 'Subscribed':'Subscribe'}</span></button>
-                        <button className={`px-6 py-1.5 ${isMoving ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={()=>setIsMoving(true)}><IoMdMove /><span className='ml-1'>move</span></button>
-                        <button className={`px-6 py-1.5 ${isStartSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isStartSetting} onClick={editStartPosition}><HiCursorArrowRays/><span className='ml-1'>set start</span></button>
-                        <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays/><span className='ml-1'>set goal</span></button>
-                        <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`}  onClick={handleLift}><MdForklift/><span className='ml-1'>Lift Load</span></button>
+                        <button className={`px-6 py-1.5 ${isSubed ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttSub}><MdGetApp /><span className='ml-1'>{isSubed ? 'Subscribed' : 'Subscribe'}</span></button>
+                        <button className={`px-6 py-1.5 ${isMoving ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={() => setIsMoving(true)}><IoMdMove /><span className='ml-1'>move</span></button>
+                        <button className={`px-6 py-1.5 ${isStartSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isStartSetting} onClick={editStartPosition}><HiCursorArrowRays /><span className='ml-1'>set start</span></button>
+                        <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays /><span className='ml-1'>set goal</span></button>
+                        <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={handleLift}><MdForklift /><span className='ml-1'>Lift Load</span></button>
                     </div>
                 </div>
 
