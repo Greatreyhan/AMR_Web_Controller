@@ -15,6 +15,7 @@ import { MdGetApp } from "react-icons/md";
 import { HiCursorArrowRays } from "react-icons/hi2";
 import { IoMdMove } from "react-icons/io";
 import { MdForklift } from "react-icons/md";
+import Card from './Card';
 
 const Astar= () =>{
     const [currentMap, setCurrentMap] = useState([
@@ -167,6 +168,7 @@ const Astar= () =>{
 
     const [isStartSequence, setIsStartSequence] = useState(false);
     const [isLift, setIsLift] = useState(false)
+    const [isFirst, setIsFirst] = useState(false)
 
 
     const mqttConnect = () => {
@@ -314,6 +316,18 @@ const Astar= () =>{
     const [isSetting, setIsSetting] = useState(false);
     const positionRef = useRef(player)
 
+    //////////////////////////////////////////////// Inference Params //////////////////////////////////
+    const [isAuto, setIsAuto] = useState(false)
+    const [coordinateSet, setCoordinateSet] = useState({
+        x:0,
+        y:0
+    })
+    const [listMsg, setListMsg] = useState<string[]>([])
+    const [listGoal, setListGoal] = useState<any[]>([[0,0]])
+    const [listActuator, setListActuator] = useState<any[]>([])
+    const [isMoving, setIsMoving] = useState(false)
+    const [currentMove, setCurrentMove] = useState(0)
+    const [showCard, setShowCard] = useState(false)
 
     useEffect(() => {
         positionRef.current = player;
@@ -321,21 +335,79 @@ const Astar= () =>{
 
     }, [count])
 
+
     useEffect(() => {
         //////////////////////////////////////////////// Inference to send the path //////////////////////////////////
         if (isGoalReached(positionRef.current)) {
-            let msg = `A55A${path.length+1}|${goal.x}:${goal.y}|`
-            path.map((step,i)=>{
-                if((path.length - i)>1) msg += `${step.x}:${step.y}|`
-                else msg += `${step.x}:${step.y}FF`
-            })
-            console.log(msg)
-            mqttPublish(msg)
-            setIsStartSequence(false)
+            if(!isFirst){
+                clearAll(start);
+                setIsFirst(true)
+            }
+            else{
+                let msg = `A55A${path.length+1}|${goal.x}:${goal.y}|`
+                path.map((step,i)=>{
+                    if((path.length - i)>1) msg += `${step.x}:${step.y}|`
+                    else msg += `${step.x}:${step.y}FF`
+                })
+                setListMsg([...listMsg, msg])
+                setStart(positionRef.current)
+                setIsStartSequence(false)
+            }
+        }
+        if(isMoving){
+            // Send Data in Sequence
+            mqttPublish(listMsg[currentMove*2])
+            setCurrentMove(currentMove+1)
+            setIsMoving(false)
         }
 
-    }, [positionRef.current])
-    /* eslint-enable */
+        // Mencapai posisi tujuan
+        if(listGoal[currentMove] && currentMove != 0){
+            if(positionRef.current.x == listGoal[currentMove][0]&& positionRef.current.y == listGoal[currentMove][1]){
+
+                // Use Actuator ?
+                if(listActuator[currentMove] != listActuator[currentMove-1]){
+                    if(listActuator[currentMove] == 1){
+                        setIsLift(true)
+                        handleLift()
+                        setTimeout(() => {
+                            console.log('Pengangkatan Berhasil!');
+                        }, 20000);
+                    }
+                    else if(listActuator[currentMove] == 0){
+                        setIsLift(false)
+                        handleLift()
+                        setTimeout(() => {
+                            console.log('Penurunan Berhasil!');
+                        }, 20000);
+                    }
+                }
+                
+
+                setIsMoving(true)
+            }
+        }
+
+    }, [positionRef.current,isMoving])
+    
+    useEffect(() => {
+        if(isAuto){
+            // console.log(listMsg)
+            // console.log(listGoal)
+            // console.log(listActuator)
+            setGoal(coordinateSet)
+            setListGoal([...listGoal,[coordinateSet.x,coordinateSet.y]])
+            setListActuator([...listActuator, 1])
+            setIsStartSetting(false);
+            setIsSetting(false);
+            setIsGoalSetting(true);
+            moveToLowestCost();
+            clearAll(start);
+            setShowCard(true)
+        }
+        setIsAuto(false)
+
+    }, [isAuto,positionRef.current])
 
     const decimalToHex = (n:number) => {
         return ('0' + n.toString(16)).slice(-2).toUpperCase();
@@ -443,6 +515,9 @@ const Astar= () =>{
 
     return (
         <div className="Astar pt-32 flex flex-col justify-center items-center w-full">
+            {showCard ?
+                <Card listActuator={listActuator} setListActuator={setListActuator} setShowCard={setShowCard} />
+            :null}
             <LeftNav rxMsg={rxMsg} currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
             <RightNav rxMsg={rxMsg} />
             <div className="Astar-header flex justify-center w-full">
@@ -464,6 +539,8 @@ const Astar= () =>{
                                 isSetting={isSetting}
                                 isStartSetting={isStartSetting}
                                 isGoalSetting={isGoalSetting}
+                                setIsAuto={setIsAuto}
+                                setCoordinateSet={setCoordinateSet}
                                 onSetStart={onSetStart}
                                 onSetGoal={onSetGoal}
                             />
@@ -472,7 +549,7 @@ const Astar= () =>{
                     <div className="flex flex-row gap-5 justify-center fixed bottom-0 z-30 w-10/12 rounded-t-lg bg-slate-900 py-4">
                         <button className={`px-6 py-1.5 ${connectStatus == 'Connected' ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttConnect}><PiPlugsConnectedFill /><span className='ml-1'>{connectStatus}</span></button>
                         <button className={`px-6 py-1.5 ${isSubed ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttSub}><MdGetApp/><span className='ml-1'>{isSubed ? 'Subscribed':'Subscribe'}</span></button>
-                        <button className={`px-6 py-1.5 ${isStartSequence ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={moveToLowestCost}><IoMdMove /><span className='ml-1'>move</span></button>
+                        <button className={`px-6 py-1.5 ${isMoving ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={()=>setIsMoving(true)}><IoMdMove /><span className='ml-1'>move</span></button>
                         <button className={`px-6 py-1.5 ${isStartSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isStartSetting} onClick={editStartPosition}><HiCursorArrowRays/><span className='ml-1'>set start</span></button>
                         <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays/><span className='ml-1'>set goal</span></button>
                         <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`}  onClick={handleLift}><MdForklift/><span className='ml-1'>Lift Load</span></button>
