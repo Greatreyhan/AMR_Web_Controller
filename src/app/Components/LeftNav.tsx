@@ -50,7 +50,7 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
             T
         };
         setCoordinate([KinematicData.Sx,KinematicData.Sy,KinematicData.St])
-        console.log(KinematicData);
+        // console.log(KinematicData);
         return KinematicData;
     }
 
@@ -76,7 +76,7 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
             z_acceleration: parseValue(packet[13], packet[14]),
         };
     
-        console.log(BNO08x);
+        // console.log(BNO08x);
         setBNO08X(BNO08x)
         return BNO08x;
     };

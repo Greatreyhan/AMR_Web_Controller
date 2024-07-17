@@ -126,7 +126,14 @@ const Astar= () =>{
             handleAddBlock(posy,posx)
         }
         // Generate new Astar
-        if(command == 1) moveToLowestCost();
+        if(command == 1) {
+            clearAll(start);
+            setGoal(goal)
+            setIsStartSetting(false);
+            setIsSetting(false);
+            setIsGoalSetting(true);
+            moveToLowestCost();
+        }
         console.log('blocking coordinate : ',n);
         console.log('Current position : ', start);
     }
@@ -206,15 +213,16 @@ const Astar= () =>{
                 setPayload(payload)
                 setRxMsg(message.toString())
                 const msg = message.toString()
-                console.log(`received message: ${message} from topic: ${topic}`)
                 if(msg[4] == '1' && msg[5] == '5'){
                     parseKinematicPacket(msg)
                 }
                 else if(msg[4] == '2' && msg[5] == '1'){
                     parseBlockerByCurrentCoordinate(msg)
+                    console.log(`received message: ${message} from topic: ${topic}`)
                 }
                 else if(msg[4] == '2' && msg[5] == '1'){
                     parseFreeBlockByCurrentCoordinate(msg)
+                    console.log(`received message: ${message} from topic: ${topic}`)
                 }
                 
                 // ---------------------------------------------------- HANDLE COORDINATE ------------------------------------------------------------------------//

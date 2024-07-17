@@ -16,6 +16,7 @@ interface MemoTileProps {
   setCoordinateSet: any;
   onSetStart: any;
   onSetGoal: any;
+  isRoboPos: boolean;
 }
 
 export const MemoTile: FC<MemoTileProps> = ({
@@ -26,6 +27,7 @@ export const MemoTile: FC<MemoTileProps> = ({
   isGoal,
   isPath,
   isUserPosition,
+  isRoboPos,
   setTileAsBlocker,
   isSetting,
   isGoalSetting,
@@ -40,7 +42,8 @@ export const MemoTile: FC<MemoTileProps> = ({
   const isRoadClass = isRoad ? 'is_road' : '';
   const isGoalClass = isGoal ? 'is_goal' : '';
   const isUserPositionClass = isUserPosition ? 'is_user' : '';
-  const isPathClass = isPath ? 'is_path' : '';
+  const isRoboPosClass = isRoboPos ? 'is_robopos' : '';
+  const isPathClass = (isPath && !isRoboPos) ? 'is_path' : '';
   const isTentativeClass = isOpen && (isOpen as any).IS_TENTATIVE_BETTER ? 'is_tentative' : '';
 
   const memoIsRoadClass = useMemo(() => isRoadClass, [isRoadClass]);
@@ -66,7 +69,7 @@ export const MemoTile: FC<MemoTileProps> = ({
   return (
     <div
       onClick={resolveClickBehaviour}
-      className={`size ${classes} ${memoIsVisitedClass} ${memoIsRoadClass} ${memoIsGoalClass} ${isUserPositionClass} ${isPathClass} ${isTentativeClass}`}
+      className={`size ${classes} ${memoIsVisitedClass} ${memoIsRoadClass} ${memoIsGoalClass} ${isUserPositionClass} ${isPathClass} ${isTentativeClass} ${isRoboPosClass}`}
     />
   );
 };

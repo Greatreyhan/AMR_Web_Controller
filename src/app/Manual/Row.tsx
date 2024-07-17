@@ -25,6 +25,7 @@ interface MemoRowProps {
   isGoalSetting: boolean;
   isStartSetting: boolean;
   setIsAuto: any;
+  roboPos: any;
   setCoordinateSet: (x: number, y: number) => void;
   onSetGoal: (x: number, y: number) => void;
   onSetStart: (x: number, y: number) => void;
@@ -44,6 +45,7 @@ const MemoRow: React.FC<MemoRowProps> = ({
   isGoalSetting,
   isStartSetting,
   setIsAuto,
+  roboPos,
   setCoordinateSet,
   onSetGoal,
   onSetStart,
@@ -74,6 +76,10 @@ const MemoRow: React.FC<MemoRowProps> = ({
     return userPosition.x === x && userPosition.y === y;
   };
 
+  const isRoboPos = (x: number, y: number): boolean => {
+    return roboPos.x === x && roboPos.y === y;
+  };
+
   return (
     <div className="flex">
       {columnsToRender
@@ -89,6 +95,7 @@ const MemoRow: React.FC<MemoRowProps> = ({
               isGoal={isGoal(item.y)}
               isPath={isPath(item.y)}
               isUserPosition={isUserPosition(item.x, item.y)}
+              isRoboPos={isRoboPos(item.x, item.y)}
               setTileAsBlocker={setTileAsBlocker}
               isSetting={isSetting}
               isStartSetting={isStartSetting}

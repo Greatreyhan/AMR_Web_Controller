@@ -28,6 +28,7 @@ interface MapProps {
   onSetGoal: any;
   onSetStart: any;
   setCoordinateSet: any;
+  roboPos: any
 }
 
 export const Map: React.FC<MapProps> = ({
@@ -45,6 +46,7 @@ export const Map: React.FC<MapProps> = ({
   isStartSetting,
   setIsAuto,
   setCoordinateSet,
+  roboPos,
   onSetGoal,
   onSetStart
 }) => {
@@ -72,6 +74,7 @@ export const Map: React.FC<MapProps> = ({
           isStartSetting={isStartSetting}
           isGoalSetting={isGoalSetting}
           // custom params
+          roboPos={roboPos}
           setIsAuto={setIsAuto}
           setCoordinateSet={setCoordinateSet}
           onSetStart={onSetStart}

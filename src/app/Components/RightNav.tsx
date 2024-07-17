@@ -41,7 +41,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
         setBatteryTemperature(sensor.temperature)
         setLoadWeight(sensor.loadcell)
         setBatteryCapacity(voltageToSoC((sensor.voltage)/100))
-        console.log(sensor);
+        // console.log(sensor);
         return sensor;
     };
 
@@ -67,7 +67,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
             z_acceleration: parseValue(packet[13], packet[14]),
         };
     
-        console.log(BNO08x);
+        // console.log(BNO08x);
         return BNO08x;
     };
 
@@ -101,7 +101,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
             Vt
         };
         setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
-        console.log(KinematicData);
+        // console.log(KinematicData);
         return KinematicData;
     }
 

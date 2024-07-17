@@ -113,6 +113,8 @@ const Astar = () => {
     const [isLift, setIsLift] = useState(false)
     const [isFirst, setIsFirst] = useState(false)
     const [isNewGenerated, setIsNewGenerated] = useState(false)
+    const [roboPos, setRoboPos] = useState({x:0,y:0})
+    const [isStartSetted, setIsStartSetted] = useState(false)
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
     const parseValue = (highByte: any, lowByte: any) => {
         const value = (highByte << 8) | lowByte;
@@ -153,9 +155,11 @@ const Astar = () => {
             x: Math.round(Sy / 500),
             y: Math.round(Sx / 500)
         }
-        clearAll({ ...pos_data, ...extendUserData });
-        setStart(pos_data)
-        setIsStartSetting(false)
+        // clearAll({ ...pos_data, ...extendUserData });
+        console.log('kinematic data :',pos_data)
+        setRoboPos(pos_data)
+        // setStart(pos_data)
+        // setIsStartSetting(false)
         return KinematicData;
     }
 
@@ -243,22 +247,15 @@ const Astar = () => {
 
 
     useEffect(() => {
-        //////////////////////////////////////////////// Inference to send the path //////////////////////////////////
+
         if (isGoalReached(positionRef.current)) {
             if (!isFirst) {
                 clearAll(start);
                 setIsFirst(true)
             }
-            else if (isDistracted) {
-                let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
-                path.map((step, i) => {
-                    if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
-                    else msg += `${step.x}:${step.y}FF`
-                })
-                mqttPublish(msg);
-                setIsDistracted(false);
-            }
-            else if (isFirst && !isDistracted) {
+            
+            else if (isFirst && !isNewGenerated && !isStartSetted) {
+                console.log('publishing old')
                 let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
                 path.map((step, i) => {
                     if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
@@ -268,8 +265,20 @@ const Astar = () => {
                 setStart(positionRef.current)
                 setIsStartSequence(false)
             }
+            else if (isFirst && !isNewGenerated && isStartSetted) {
+                console.log('publishing new')
+                let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
+                path.map((step, i) => {
+                    if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
+                    else msg += `${step.x}:${step.y}FF`
+                })
+                mqttPublish(msg);
+                setIsNewGenerated(false);
+                setIsStartSetted(false);
+            }
         }
-        if (isMoving) {
+        if (isMoving && !isNewGenerated) {
+            console.log('publishing move')
             // Send Data in Sequence
             mqttPublish(listMsg[currentMove * 2])
             setCurrentMove(currentMove + 1)
@@ -302,27 +311,30 @@ const Astar = () => {
                 setIsMoving(true)
             }
         }
-        if (isDistracted) {
-            // Set Goal
-            if(isDistracted){
+        if (isNewGenerated && !isStartSetted) {
+                // Menggunakan goal saat ini
                 let newCoordinate = {
                     x: listGoal[currentMove][0],
                     y: listGoal[currentMove][1],
                 }
-    
-                clearAll(start);
+                console.log('set pos',roboPos)
+                console.log('set goal',newCoordinate)
+                clearAll(roboPos);
+                setStart(roboPos)
                 setGoal(newCoordinate)
-                setIsStartSetting(false);
-                setIsSetting(false);
-                setIsGoalSetting(true);
                 moveToLowestCost();
-            }
+                setIsNewGenerated(false);
+                setIsStartSetted(true)
+                // clearAll(start);
         }
 
-    }, [positionRef.current, isMoving, isDistracted])
+    }, [positionRef.current, isMoving, isNewGenerated,isStartSetted])
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------//
+    // -------------------------------------------------------- HANDLE CLICKER ---------------------------------------------------------------------------//
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------//
 
     useEffect(() => {
-        if (isAuto && !isDistracted) {
+        if (isAuto && !isNewGenerated) {
             setGoal(coordinateSet)
             setListGoal([...listGoal, [coordinateSet.x, coordinateSet.y]])
             setListActuator([...listActuator, 1])
@@ -335,8 +347,11 @@ const Astar = () => {
         }
         setIsAuto(false)
 
-    }, [isAuto, positionRef.current])
+    }, [isAuto])
 
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------//
+    // ---------------------------------------------------- HANDLE MQTT SUBSCRIBE ------------------------------------------------------------------------//
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------//
     useEffect(() => {
         if (client) {
             client.on('connect', () => {
@@ -364,19 +379,23 @@ const Astar = () => {
                 }
                 else if (msg[4] == '2' && msg[5] == '1') {
                     parseBlockerByCurrentCoordinate(msg)
-                    setIsDistracted(true)
+                    
+                    // setIsDistracted(true)
 
                 }
                 else if (msg[4] == '2' && msg[5] == '2') {
                     parseFreeBlockByCurrentCoordinate(msg)
-                    setIsDistracted(true)
+                    // setIsDistracted(true)
                 }
 
-                // ---------------------------------------------------- HANDLE COORDINATE ------------------------------------------------------------------------//
+                
 
             })
         }
     }, [client])
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------//
+    // ---------------------------------------------------- PARSE INTERRUPTER MSG ------------------------------------------------------------------------//
+    // ---------------------------------------------------------------------------------------------------------------------------------------------------//
 
 
     const parseBlockerByCurrentCoordinate = (hexString: string) => {
@@ -385,17 +404,19 @@ const Astar = () => {
         const command = parseInt(hexString[8])
         for (let i = 0; i < n * 6; i += 6) {
             let posx = 0
-            if (hexString[9 + i] == 'N') posx = start.y - parseInt(hexString[10 + i] + hexString[11 + i])
-            else if (hexString[9 + i] == 'P') posx = start.y + parseInt(hexString[10 + i] + hexString[11 + i])
+            if (hexString[9 + i] == 'N') posx = roboPos.y - parseInt(hexString[10 + i] + hexString[11 + i])
+            else if (hexString[9 + i] == 'P') posx = roboPos.y + parseInt(hexString[10 + i] + hexString[11 + i])
             let posy = 0
-            if (hexString[12 + i] == 'N') posy = start.x - parseInt(hexString[13 + i] + hexString[14 + i])
-            else if (hexString[12 + i] == 'P') posy = start.x + parseInt(hexString[13 + i] + hexString[14 + i])
+            if (hexString[12 + i] == 'N') posy = roboPos.x - parseInt(hexString[13 + i] + hexString[14 + i])
+            else if (hexString[12 + i] == 'P') posy = roboPos.x + parseInt(hexString[13 + i] + hexString[14 + i])
             console.log('coordinate :', posx, posy, i)
             handleAddBlock(posy, posx)
         }
 
         if(command == 1){
             setIsNewGenerated(true)
+            
+            // setIsStartSequence(false)
         }
         else{
             setIsNewGenerated(false)
@@ -403,7 +424,7 @@ const Astar = () => {
 
         // Generate new Astar
         console.log('blocking coordinate : ', n);
-        console.log('Current position : ', start);
+        console.log('Current position : ', roboPos);
     }
 
     const parseFreeBlockByCurrentCoordinate = (hexString: string) => {
@@ -413,11 +434,11 @@ const Astar = () => {
         for (let i = 0; i < n * 6; i += 6) {
 
             let posx = 0
-            if (hexString[9 + i] == 'N') posx = start.y - parseInt(hexString[10 + i] + hexString[11 + i])
-            else if (hexString[9 + i] == 'P') posx = start.y + parseInt(hexString[10 + i] + hexString[11 + i])
+            if (hexString[9 + i] == 'N') posx = roboPos.y - parseInt(hexString[10 + i] + hexString[11 + i])
+            else if (hexString[9 + i] == 'P') posx = roboPos.y + parseInt(hexString[10 + i] + hexString[11 + i])
             let posy = 0
-            if (hexString[12 + i] == 'N') posy = start.x - parseInt(hexString[13 + i] + hexString[14 + i])
-            else if (hexString[12 + i] == 'P') posy = start.x + parseInt(hexString[13 + i] + hexString[14 + i])
+            if (hexString[12 + i] == 'N') posy = roboPos.x - parseInt(hexString[13 + i] + hexString[14 + i])
+            else if (hexString[12 + i] == 'P') posy = roboPos.x + parseInt(hexString[13 + i] + hexString[14 + i])
             console.log('coordinate :', posx, posy, i)
             handleRemoveBlock(posy, posx)
         }
@@ -558,6 +579,7 @@ const Astar = () => {
                                 road={road}
                                 path={path}
                                 goal={goal}
+                                roboPos={roboPos}
                                 userPosition={player}
                                 setTileAsBlocker={setTileAsBlocker}
                                 isSetting={isSetting}

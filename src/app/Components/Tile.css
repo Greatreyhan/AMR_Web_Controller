@@ -33,7 +33,9 @@
 .is_user {
     background: rgb(245, 158, 11) ;
 }
-
+.is_robopos{
+    background: rgb(245, 11, 11) !important;
+}
 .is_path {
     background-color: rgb(253, 224, 71) !important;
 }
