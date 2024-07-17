@@ -115,6 +115,7 @@ const Astar = () => {
     const [isNewGenerated, setIsNewGenerated] = useState(false)
     const [roboPos, setRoboPos] = useState({x:0,y:0})
     const [isStartSetted, setIsStartSetted] = useState(false)
+    const [msgDisctracted, setMsgDistracted] = useState('')
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
     const parseValue = (highByte: any, lowByte: any) => {
         const value = (highByte << 8) | lowByte;
@@ -245,17 +246,52 @@ const Astar = () => {
 
     }, [count])
 
+    useEffect(() => {
+        positionRef.current = player;
+        setFinalPath()
+
+    }, [count])
 
     useEffect(() => {
+        if(isMoving){
+            // Send Data in Sequence
+            mqttPublish(listMsg[currentMove * 2])
+            setCurrentMove(currentMove + 1)
+            setIsMoving(false)
+        }
 
+    }, [isMoving])
+
+
+    useEffect(() => {
+        if (isNewGenerated && !isStartSetted) {
+                // Menggunakan goal saat ini
+                let newCoordinate = {
+                    x: listGoal[currentMove][0],
+                    y: listGoal[currentMove][1],
+                }
+                console.log('set pos',roboPos)
+                console.log('set goal',newCoordinate)
+                clearAll(roboPos);
+                setStart(roboPos)
+                setGoal(newCoordinate)
+                moveToLowestCost();
+                setIsNewGenerated(false);
+                setIsStartSetted(true)
+        }
+
+    }, [isNewGenerated,isStartSetted])
+
+
+    useEffect(() => {
         if (isGoalReached(positionRef.current)) {
             if (!isFirst) {
+                console.log('first')
                 clearAll(start);
                 setIsFirst(true)
             }
-            
-            else if (isFirst && !isNewGenerated && !isStartSetted) {
-                console.log('publishing old')
+            else if (isFirst && !isDistracted && !isNewGenerated) {
+                console.log('generate msg')
                 let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
                 path.map((step, i) => {
                     if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
@@ -265,24 +301,17 @@ const Astar = () => {
                 setStart(positionRef.current)
                 setIsStartSequence(false)
             }
-            else if (isFirst && !isNewGenerated && isStartSetted) {
-                console.log('publishing new')
+            else if(isDistracted){
                 let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
                 path.map((step, i) => {
                     if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
                     else msg += `${step.x}:${step.y}FF`
                 })
-                mqttPublish(msg);
+                setMsgDistracted(msg)
                 setIsNewGenerated(false);
                 setIsStartSetted(false);
             }
-        }
-        if (isMoving && !isNewGenerated) {
-            console.log('publishing move')
-            // Send Data in Sequence
-            mqttPublish(listMsg[currentMove * 2])
-            setCurrentMove(currentMove + 1)
-            setIsMoving(false)
+
         }
 
         // Mencapai posisi tujuan
@@ -311,30 +340,16 @@ const Astar = () => {
                 setIsMoving(true)
             }
         }
-        if (isNewGenerated && !isStartSetted) {
-                // Menggunakan goal saat ini
-                let newCoordinate = {
-                    x: listGoal[currentMove][0],
-                    y: listGoal[currentMove][1],
-                }
-                console.log('set pos',roboPos)
-                console.log('set goal',newCoordinate)
-                clearAll(roboPos);
-                setStart(roboPos)
-                setGoal(newCoordinate)
-                moveToLowestCost();
-                setIsNewGenerated(false);
-                setIsStartSetted(true)
-                // clearAll(start);
-        }
+ 
 
-    }, [positionRef.current, isMoving, isNewGenerated,isStartSetted])
+    }, [positionRef.current])
     // ---------------------------------------------------------------------------------------------------------------------------------------------------//
     // -------------------------------------------------------- HANDLE CLICKER ---------------------------------------------------------------------------//
     // ---------------------------------------------------------------------------------------------------------------------------------------------------//
 
     useEffect(() => {
-        if (isAuto && !isNewGenerated) {
+        if (isAuto && !isNewGenerated && !isDistracted) {
+            console.log(listMsg)
             setGoal(coordinateSet)
             setListGoal([...listGoal, [coordinateSet.x, coordinateSet.y]])
             setListActuator([...listActuator, 1])
@@ -380,12 +395,12 @@ const Astar = () => {
                 else if (msg[4] == '2' && msg[5] == '1') {
                     parseBlockerByCurrentCoordinate(msg)
                     
-                    // setIsDistracted(true)
+                    setIsDistracted(true)
 
                 }
                 else if (msg[4] == '2' && msg[5] == '2') {
                     parseFreeBlockByCurrentCoordinate(msg)
-                    // setIsDistracted(true)
+                    setIsDistracted(true)
                 }
 
                 
