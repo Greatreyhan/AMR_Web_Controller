@@ -118,6 +118,7 @@ const Astar = () => {
     const [msgDisctracted, setMsgDistracted] = useState('')
     const [moveDelay,setMoveDelay] = useState(0)
     const [isActuatorPlay, setIsActuatorPlay] = useState(false)
+    const [blockerNew, setBlockerNew] = useState('')
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
     const parseValue = (highByte: any, lowByte: any) => {
         const value = (highByte << 8) | lowByte;
@@ -306,6 +307,20 @@ const Astar = () => {
 
     useEffect(() => {
         if (isNewGenerated && !isStartSetted) {
+                console.log(roboPos)    
+                const n = parseInt(blockerNew[6] + blockerNew[7])
+                const command = parseInt(blockerNew[8])
+                for (let i = 0; i < n * 6; i += 6) {
+                    let posx = 0
+                    if (blockerNew[9 + i] == 'N') posx =  roboPos.y- parseInt(blockerNew[10 + i] + blockerNew[11 + i])
+                    else if (blockerNew[9 + i] == 'P') posx =  roboPos.y+parseInt(blockerNew[10 + i] + blockerNew[11 + i])
+                    let posy = 0
+                    if (blockerNew[12 + i] == 'N') posy =roboPos.x- parseInt(blockerNew[13 + i] + blockerNew[14 + i])
+                    else if (blockerNew[12 + i] == 'P') posy =roboPos.x + parseInt(blockerNew[13 + i] + blockerNew[14 + i])
+                    console.log('coordinate relative:', posx, posy, i)
+                    handleAddBlock(posy, posx)
+                }
+
                 // Menggunakan goal saat ini
                 let newCoordinate = {
                     x: listGoal[currentMove][0],
@@ -429,31 +444,10 @@ const Astar = () => {
 
     const parseBlockerByCurrentCoordinate = (hexString: string) => {
 
-        const n = parseInt(hexString[6] + hexString[7])
-        const command = parseInt(hexString[8])
-        for (let i = 0; i < n * 6; i += 6) {
-            let posx = 0
-            if (hexString[9 + i] == 'N') posx = roboPos.y - parseInt(hexString[10 + i] + hexString[11 + i])
-            else if (hexString[9 + i] == 'P') posx = roboPos.y + parseInt(hexString[10 + i] + hexString[11 + i])
-            let posy = 0
-            if (hexString[12 + i] == 'N') posy = roboPos.x - parseInt(hexString[13 + i] + hexString[14 + i])
-            else if (hexString[12 + i] == 'P') posy = roboPos.x + parseInt(hexString[13 + i] + hexString[14 + i])
-            console.log('coordinate :', posx, posy, i)
-            handleAddBlock(posy, posx)
-        }
+        setBlockerNew(hexString)
 
-        if(command == 1){
-            setIsNewGenerated(true)
+        setIsNewGenerated(true)
             
-            // setIsStartSequence(false)
-        }
-        else{
-            setIsNewGenerated(false)
-        }
-
-        // Generate new Astar
-        console.log('blocking coordinate : ', n);
-        console.log('Current position : ', roboPos);
     }
 
     const parseFreeBlockByCurrentCoordinate = (hexString: string) => {
