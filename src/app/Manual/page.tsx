@@ -116,6 +116,8 @@ const Astar = () => {
     const [roboPos, setRoboPos] = useState({x:0,y:0})
     const [isStartSetted, setIsStartSetted] = useState(false)
     const [msgDisctracted, setMsgDistracted] = useState('')
+    const [moveDelay,setMoveDelay] = useState(0)
+    const [isActuatorPlay, setIsActuatorPlay] = useState(false)
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
     const parseValue = (highByte: any, lowByte: any) => {
         const value = (highByte << 8) | lowByte;
@@ -157,7 +159,7 @@ const Astar = () => {
             y: Math.round(Sx / 500)
         }
         // clearAll({ ...pos_data, ...extendUserData });
-        console.log('kinematic data :',pos_data)
+        // console.log('kinematic data :',pos_data)
         setRoboPos(pos_data)
         // setStart(pos_data)
         // setIsStartSetting(false)
@@ -247,15 +249,54 @@ const Astar = () => {
     }, [count])
 
     useEffect(() => {
-        positionRef.current = player;
-        setFinalPath()
+        if(moveDelay != 0 && isActuatorPlay){
+            const timer = setTimeout(() => {
+            setIsMoving(true)
+            setIsActuatorPlay(false)
+            }, 20000);
+            return () => clearTimeout(timer); // Cleanup the timeout if the component unmounts or delay changes
+        }   
+      }, [moveDelay,isActuatorPlay]);
 
-    }, [count])
+    useEffect(() => {
+        if (listGoal[currentMove] != undefined && currentMove != 0) {
+            if (roboPos.x == listGoal[currentMove][0] && roboPos.y == listGoal[currentMove][1]) {
+                console.log(listActuator)
+
+                if (listActuator[currentMove-1] != (currentMove == 0 ? 0 : listActuator[currentMove - 2])) {
+                    
+                    if (listActuator[currentMove-1] == 1 && !isActuatorPlay) {
+                        console.log('mengirim data aktuator keatas')
+                        let idcmd = decimalToHex(cmdId)
+                        let msg = `AA55${idcmd}000000${isLift ? 2 : 1}0000FF`
+                        mqttPublish(msg)
+                        setCmdId(cmdId + 1);
+                        setIsActuatorPlay(true)
+                        setMoveDelay(20000);
+                    }
+                    else if (listActuator[currentMove-1] == 0 && !isActuatorPlay) {
+                        console.log('mengirim data aktuator kebawah')
+                        let idcmd = decimalToHex(cmdId)
+                        let msg = `AA55${idcmd}000000${isLift ? 2 : 1}0000FF`
+                        mqttPublish(msg)
+                        setCmdId(cmdId + 1);
+                        setIsActuatorPlay(true)
+                        setMoveDelay(20000);
+                    }
+                }
+                else{
+                    setIsMoving(true)
+                    setIsActuatorPlay(false)
+                }
+            }
+        }
+
+    }, [roboPos])
 
     useEffect(() => {
         if(isMoving){
             // Send Data in Sequence
-            mqttPublish(listMsg[currentMove * 2])
+            mqttPublish(listMsg[currentMove + 1])
             setCurrentMove(currentMove + 1)
             setIsMoving(false)
         }
@@ -313,33 +354,6 @@ const Astar = () => {
             }
 
         }
-
-        // Mencapai posisi tujuan
-        if (listGoal[currentMove] && currentMove != 0) {
-            if (positionRef.current.x == listGoal[currentMove][0] && positionRef.current.y == listGoal[currentMove][1]) {
-
-                // Use Actuator ?
-                if (listActuator[currentMove] != listActuator[currentMove - 1]) {
-                    if (listActuator[currentMove] == 1) {
-                        setIsLift(true)
-                        handleLift()
-                        setTimeout(() => {
-                            console.log('Pengangkatan Berhasil!');
-                        }, 20000);
-                    }
-                    else if (listActuator[currentMove] == 0) {
-                        setIsLift(false)
-                        handleLift()
-                        setTimeout(() => {
-                            console.log('Penurunan Berhasil!');
-                        }, 20000);
-                    }
-                }
-
-
-                setIsMoving(true)
-            }
-        }
  
 
     }, [positionRef.current])
@@ -350,9 +364,10 @@ const Astar = () => {
     useEffect(() => {
         if (isAuto && !isNewGenerated && !isDistracted) {
             console.log(listMsg)
+            console.log(listActuator)
             setGoal(coordinateSet)
             setListGoal([...listGoal, [coordinateSet.x, coordinateSet.y]])
-            setListActuator([...listActuator, 1])
+            // setListActuator([...listActuator, 1])
             setIsStartSetting(false);
             setIsSetting(false);
             setIsGoalSetting(true);
@@ -388,13 +403,12 @@ const Astar = () => {
                 setPayload(payload)
                 setRxMsg(message.toString())
                 const msg = message.toString()
-                console.log(`received message: ${message} from topic: ${topic}`)
+                // console.log(`received message: ${message} from topic: ${topic}`)
                 if (msg[4] == '1' && msg[5] == '5') {
                     parseKinematicPacket(msg)
                 }
                 else if (msg[4] == '2' && msg[5] == '1') {
                     parseBlockerByCurrentCoordinate(msg)
-                    
                     setIsDistracted(true)
 
                 }
@@ -473,12 +487,12 @@ const Astar = () => {
     }
 
     const handleLift = () => {
-        setIsLift(!isLift)
+        // setIsLift(!isLift)
         let idcmd = decimalToHex(cmdId)
         let msg = `AA55${idcmd}000000${isLift ? 2 : 1}0000FF`
         mqttPublish(msg)
         setCmdId(cmdId + 1);
-        console.log(msg)
+        // console.log(msg)
     }
 
     const moveByOneTile = () => setCount((prevState) => prevState + 1);
