@@ -119,6 +119,7 @@ const Astar = () => {
     const [moveDelay,setMoveDelay] = useState(0)
     const [isActuatorPlay, setIsActuatorPlay] = useState(false)
     const [blockerNew, setBlockerNew] = useState('')
+    const [pathLength, setPathLength] = useState(0);
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
     const parseValue = (highByte: any, lowByte: any) => {
         const value = (highByte << 8) | lowByte;
@@ -262,23 +263,24 @@ const Astar = () => {
     useEffect(() => {
         if (listGoal[currentMove] != undefined && currentMove != 0) {
             if (roboPos.x == listGoal[currentMove][0] && roboPos.y == listGoal[currentMove][1]) {
-                console.log(listActuator)
+                console.log('current act',listActuator[currentMove-1])
+                console.log('last act',(currentMove == 0 ? 0 : listActuator[currentMove - 2]))
+                console.log('move', currentMove)
 
-                if (listActuator[currentMove-1] != (currentMove == 0 ? 0 : listActuator[currentMove - 2])) {
-                    
+                if ((((currentMove == 0 ? 0 : listActuator[currentMove - 1]) != (currentMove == 0 ? 0 : listActuator[currentMove - 2]) && currentMove != 1) || (currentMove == 1 && listActuator[currentMove - 1] == 1))) {
                     if (listActuator[currentMove-1] == 1 && !isActuatorPlay) {
-                        console.log('mengirim data aktuator keatas')
+                        // console.log('mengirim data aktuator keatas')
                         let idcmd = decimalToHex(cmdId)
-                        let msg = `AA55${idcmd}000000${isLift ? 2 : 1}0000FF`
+                        let msg = `AA55${idcmd}00000010000FF`
                         mqttPublish(msg)
                         setCmdId(cmdId + 1);
                         setIsActuatorPlay(true)
                         setMoveDelay(20000);
                     }
                     else if (listActuator[currentMove-1] == 0 && !isActuatorPlay) {
-                        console.log('mengirim data aktuator kebawah')
+                        // console.log('mengirim data aktuator kebawah')
                         let idcmd = decimalToHex(cmdId)
-                        let msg = `AA55${idcmd}000000${isLift ? 2 : 1}0000FF`
+                        let msg = `AA55${idcmd}00000020000FF`
                         mqttPublish(msg)
                         setCmdId(cmdId + 1);
                         setIsActuatorPlay(true)
@@ -297,7 +299,7 @@ const Astar = () => {
     useEffect(() => {
         if(isMoving){
             // Send Data in Sequence
-            mqttPublish(listMsg[currentMove + 1])
+            mqttPublish(listMsg[currentMove * 2])
             setCurrentMove(currentMove + 1)
             setIsMoving(false)
         }
@@ -348,14 +350,15 @@ const Astar = () => {
             }
             else if (isFirst && !isDistracted && !isNewGenerated) {
                 console.log('generate msg')
-                let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
-                path.map((step, i) => {
-                    if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
+                let msg = `A55A${(path.length-pathLength) + 1}|${goal.x}:${goal.y}|`
+                path.slice(0,(path.length-pathLength)).map((step, i) => {
+                    if (((path.length-pathLength) - i) > 1) msg += `${step.x}:${step.y}|`
                     else msg += `${step.x}:${step.y}FF`
                 })
-                setListMsg([...listMsg, msg])
-                setStart(positionRef.current)
-                setIsStartSequence(false)
+                setPathLength(path.length);
+                setListMsg([...listMsg, msg]);
+                setStart(positionRef.current);
+                setIsStartSequence(false);
             }
             else if(isDistracted){
                 let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
@@ -380,9 +383,9 @@ const Astar = () => {
         if (isAuto && !isNewGenerated && !isDistracted) {
             console.log(listMsg)
             console.log(listActuator)
+            clearAll(start);
             setGoal(coordinateSet)
             setListGoal([...listGoal, [coordinateSet.x, coordinateSet.y]])
-            // setListActuator([...listActuator, 1])
             setIsStartSetting(false);
             setIsSetting(false);
             setIsGoalSetting(true);
