@@ -367,6 +367,7 @@ const Astar = () => {
                     else msg += `${step.x}:${step.y}FF`
                 })
                 setMsgDistracted(msg)
+                mqttPublish(msg)
                 setIsNewGenerated(false);
                 setIsStartSetted(false);
             }
