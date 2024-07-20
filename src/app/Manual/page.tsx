@@ -366,6 +366,7 @@ const Astar = () => {
                     if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
                     else msg += `${step.x}:${step.y}FF`
                 })
+                console.log(msg)
                 setMsgDistracted(msg)
                 mqttPublish(msg)
                 setIsNewGenerated(false);
