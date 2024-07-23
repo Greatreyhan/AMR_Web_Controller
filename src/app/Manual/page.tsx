@@ -123,6 +123,9 @@ const Astar = () => {
     const [blockerNew, setBlockerNew] = useState('')
     const [pathLength, setPathLength] = useState(0);
 
+    // Offset Data
+    const [offsetData, setOffsetData] = useState({x:0,y:0})
+
     const [isRobotConnected, setIsRobotConnected] = useState(false)
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
     const parseValue = (highByte: any, lowByte: any) => {
@@ -161,8 +164,8 @@ const Astar = () => {
         };
         // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
         const pos_data = {
-            x: Math.round(Sy / 500),
-            y: Math.round(Sx / 500)
+            x: Math.round(Sy / 500) + offsetData.y,
+            y: Math.round(Sx / 500) + offsetData.x
         }
         // clearAll({ ...pos_data, ...extendUserData });
         // console.log('kinematic data :',pos_data)
@@ -364,7 +367,9 @@ const Astar = () => {
                     if (((path.length-pathLength) - i) > 1) msg += `${step.x}:${step.y}|`
                     else msg += `${step.x}:${step.y}FF`
                 })
-                if(msg.slice(-2) == 'FF'){
+                let lengthData = msg.split('|').length - 2
+                console.log(lengthData, (path.length-pathLength))
+                if(msg.slice(-2) == 'FF' && (path.length-pathLength) == lengthData){
                     setPathLength(path.length);
                     setListMsg([...listMsg, msg]);
                     setStart(positionRef.current);
@@ -638,6 +643,12 @@ const Astar = () => {
                     <span className='text-red-500 h-5 w-5'><MdOutlineSignalWifiOff /></span><p className='ml-2 text-sm font-semibold '>Robot Disconnected</p>
                     </div>
                     }
+
+                    {/* {listMsg[1] ?
+                        listMsg.map((list,i)=>{
+                            return(<p className='text-xs' key={i}>{list}</p>)
+                        })
+                    :null} */}
                     
                 </div>
             </div>    
