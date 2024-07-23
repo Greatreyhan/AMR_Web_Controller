@@ -15,6 +15,8 @@ import { MdGetApp } from "react-icons/md";
 import { HiCursorArrowRays } from "react-icons/hi2";
 import { IoMdMove } from "react-icons/io";
 import { MdForklift } from "react-icons/md";
+import { MdOutlineSignalWifiOff ,MdOutlineSignalWifiStatusbar4Bar} from "react-icons/md";
+
 import Card from './Card';
 
 const Astar = () => {
@@ -120,6 +122,8 @@ const Astar = () => {
     const [isActuatorPlay, setIsActuatorPlay] = useState(false)
     const [blockerNew, setBlockerNew] = useState('')
     const [pathLength, setPathLength] = useState(0);
+
+    const [isRobotConnected, setIsRobotConnected] = useState(false)
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
     const parseValue = (highByte: any, lowByte: any) => {
         const value = (highByte << 8) | lowByte;
@@ -207,7 +211,7 @@ const Astar = () => {
                     console.log('Publish error: ', error)
                 }
                 else {
-                    console.log('Publish to: ', topic)
+                    console.log('Publish msg: ', payloadMsg)
                 }
             })
             setTxMsg(payloadMsg);
@@ -299,8 +303,13 @@ const Astar = () => {
     useEffect(() => {
         if(isMoving){
             // Send Data in Sequence
-            mqttPublish(listMsg[currentMove * 2])
-            setCurrentMove(currentMove + 1)
+            if(listMsg[currentMove] != undefined){
+                mqttPublish(listMsg[currentMove])
+                setCurrentMove(currentMove + 1)
+            }
+            else{
+                console.log('msg undefined')
+            }
             setIsMoving(false)
         }
 
@@ -355,9 +364,11 @@ const Astar = () => {
                     if (((path.length-pathLength) - i) > 1) msg += `${step.x}:${step.y}|`
                     else msg += `${step.x}:${step.y}FF`
                 })
-                setPathLength(path.length);
-                setListMsg([...listMsg, msg]);
-                setStart(positionRef.current);
+                if(msg.slice(-2) == 'FF'){
+                    setPathLength(path.length);
+                    setListMsg([...listMsg, msg]);
+                    setStart(positionRef.current);
+                }
                 setIsStartSequence(false);
             }
             else if(isDistracted){
@@ -435,6 +446,9 @@ const Astar = () => {
                 else if (msg[4] == '2' && msg[5] == '2') {
                     parseFreeBlockByCurrentCoordinate(msg)
                     setIsDistracted(true)
+                }
+                if(!isRobotConnected){
+                    setIsRobotConnected(true)
                 }
 
                 
@@ -593,6 +607,40 @@ const Astar = () => {
                 : null}
             <LeftNav rxMsg={rxMsg} currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
             <RightNav rxMsg={rxMsg} />
+            {/* Legend */}
+            <div className='fixed w-64 bg-slate-700 bg-opacity-40 top-20 left-8 round rounded-lg'>
+                <div className='flex flex-col py-4 px-6'>
+                    <div className='flex my-2 items-center'>
+                    <span className='bg-red-500 h-5 w-5'></span><p className='ml-2 text-sm font-semibold '>Robot Position</p>
+                    </div>
+                    <div className='flex my-2 items-center'>
+                    <span className='bg-blue-500 h-5 w-5'></span><p className='ml-2 text-sm font-semibold '>Target Position</p>
+                    </div>
+                    <div className='flex my-2 items-center'>
+                    <span className='bg-amber-500 h-5 w-5'></span><p className='ml-2 text-sm font-semibold '>Finish Position</p>
+                    </div>
+                    <div className='flex my-2 items-center'>
+                    <span className='bg-amber-300 h-5 w-5'></span><p className='ml-2 text-sm font-semibold '>Path Plan</p>
+                    </div>
+                    <div className='flex my-2 items-center'>
+                    <span className='bg-sky-300 h-5 w-5'></span><p className='ml-2 text-sm font-semibold '>Path Calculation</p>
+                    </div>
+                </div>
+            </div>  
+            <div className='fixed w-64 bg-slate-700 bg-opacity-40 top-20 right-8 round rounded-lg'>
+                <div className='flex flex-col py-2 px-6'>
+                    {isRobotConnected ? 
+                    <div className='flex my-2 items-center'>
+                    <span className='text-green-500 h-5 w-5'><MdOutlineSignalWifiStatusbar4Bar /></span><p className='ml-2 text-sm font-semibold '>Robot Connected</p>
+                    </div>
+                    :
+                    <div className='flex my-2 items-center'>
+                    <span className='text-red-500 h-5 w-5'><MdOutlineSignalWifiOff /></span><p className='ml-2 text-sm font-semibold '>Robot Disconnected</p>
+                    </div>
+                    }
+                    
+                </div>
+            </div>    
             <div className="Astar-header flex justify-center w-full">
 
                 <div className="Astar-content flex justify-center w-full">
