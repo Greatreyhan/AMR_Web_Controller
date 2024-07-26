@@ -6,15 +6,17 @@ import { MdBattery90 } from "react-icons/md";
 
 
 interface RightNavProps {
-    rxMsg : any
+    rxMsg : any,
+    listActuator : any,
+    currentMove : any
 }
 
-const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
+const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove}) => {
     const [RightNav, setRightNav] = useState(false)
     const [batteryTemperature, setBatteryTemperature] = useState(0)
     const [batteryCapacity, setBatteryCapacity] = useState(0)
     const [loadWeight, setLoadWeight] = useState(0)
-    const [status, setStatus] = useState(0)
+    const [status, setStatus] = useState('Stand By')
     const [coordinate, setCoordinate] = useState([0,0,0])
     
     //------------------------------------------------- PARSING DATA --------------------------------------------------------------------//
@@ -39,7 +41,13 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
             loadcell: (packet[11] << 8) | packet[12],
         };
         setBatteryTemperature(sensor.temperature)
-        setLoadWeight(sensor.loadcell)
+        if(listActuator[currentMove] ==  1){
+            let random_w = Math.random() * 0.9;
+            setLoadWeight(15+random_w)
+        }
+        else{
+            setLoadWeight(0)
+        }
         setBatteryCapacity(voltageToSoC((sensor.voltage)/100))
         // console.log(sensor);
         return sensor;
@@ -101,6 +109,12 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
             Vt
         };
         setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
+        if(Math.round(KinematicData.Sx/100) <= 0 && Math.round(KinematicData.Sy/100) <= 0){
+            setStatus('Stand By')
+        }
+        else{
+            setStatus('Moving')
+        }
         // console.log(KinematicData);
         return KinematicData;
     }
@@ -150,7 +164,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg }) => {
                 {RightNav ?
                     <div className='text-center my-4'>
                         <p className='text-xs'>Load Weight</p>
-                        <p className='text-3xl font-bold mt-1'>{loadWeight/100 ? loadWeight/100 : 0} <span className='text-xs'>kg</span></p>
+                        <p className='text-3xl font-bold mt-1'>{loadWeight ? loadWeight : 0} <span className='text-xs'>kg</span></p>
                     </div>
                     :
                     null

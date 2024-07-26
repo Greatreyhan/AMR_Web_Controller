@@ -611,7 +611,7 @@ const Astar = () => {
                 <Card listActuator={listActuator} setListActuator={setListActuator} setShowCard={setShowCard} />
                 : null}
             <LeftNav rxMsg={rxMsg} currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
-            <RightNav rxMsg={rxMsg} />
+            <RightNav rxMsg={rxMsg} listActuator={listActuator} currentMove={currentMove} />
             {/* Legend */}
             <div className='fixed w-64 bg-slate-700 bg-opacity-40 top-20 left-8 round rounded-lg'>
                 <div className='flex flex-col py-4 px-6'>
