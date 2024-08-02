@@ -28,6 +28,8 @@ interface MapProps {
   onSetGoal: any;
   onSetStart: any;
   setCoordinateSet: any;
+  isRackSetting:any;
+  setRackCenter : any;
   roboPos: any
 }
 
@@ -48,6 +50,8 @@ export const Map: React.FC<MapProps> = ({
   setCoordinateSet,
   roboPos,
   onSetGoal,
+  isRackSetting,
+  setRackCenter,
   onSetStart
 }) => {
   const rowsToRender = new Array(rows).fill(0);
@@ -73,10 +77,12 @@ export const Map: React.FC<MapProps> = ({
           isSetting={isSetting}
           isStartSetting={isStartSetting}
           isGoalSetting={isGoalSetting}
+          isRackSetting={isRackSetting}
           // custom params
           roboPos={roboPos}
           setIsAuto={setIsAuto}
           setCoordinateSet={setCoordinateSet}
+          setRackCenter={setRackCenter}
           onSetStart={onSetStart}
           onSetGoal={onSetGoal}
         />

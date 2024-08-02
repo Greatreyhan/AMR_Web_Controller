@@ -103,8 +103,8 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
 
                 {leftNav ?
                     <div className='flex flex-col items-center justify-center'>
-                        <img style={{ transform: `rotate(${Math.round(BNO08X.yaw/100)}deg)`, transformOrigin: 'center' }} className={`w-24`} src={'./Crank.png'} />
-                        <p>{Math.round(BNO08X.yaw/100)}</p>
+                        <img style={{ transform: `rotate(${Math.round(BNO08X.yaw/10)}deg)`, transformOrigin: 'center' }} className={`w-24`} src={'./Crank.png'} />
+                        <p>{Math.round(BNO08X.yaw/10)}</p>
                     </div>
                     :
                     null
@@ -127,7 +127,7 @@ const LeftNav: React.FC<LeftNavProps> = ({ currentOrientation, requestOrientatio
                 {leftNav ?
                     <div className='text-center mb-4'>
                         <p className='text-xs'>IMU</p>
-                        <p className='text-xl font-bold mt-1'>{BNO08X ? `[${Math.round(BNO08X.roll/100)}, ${Math.round(BNO08X.pitch/100)}, ${Math.round(BNO08X.yaw/100)}]` : 0}</p>
+                        <p className='text-xl font-bold mt-1'>{BNO08X ? `[${Math.round(BNO08X.roll/10)}, ${Math.round(BNO08X.pitch/10)}, ${Math.round(BNO08X.yaw/10)}]` : 0}</p>
                     </div>
                     :
                     null

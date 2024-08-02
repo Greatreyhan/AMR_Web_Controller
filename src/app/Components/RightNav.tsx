@@ -14,11 +14,19 @@ interface RightNavProps {
 const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove}) => {
     const [RightNav, setRightNav] = useState(false)
     const [batteryTemperature, setBatteryTemperature] = useState(0)
-    const [batteryCapacity, setBatteryCapacity] = useState(0)
+    const [batteryCapacity, setBatteryCapacity] = useState<number>(0)
     const [loadWeight, setLoadWeight] = useState(0)
     const [status, setStatus] = useState('Stand By')
     const [coordinate, setCoordinate] = useState([0,0,0])
-    
+    const [BNO055, setBNO055] = useState({
+        yaw: 0,
+        pitch: 0,
+        roll: 0,
+        x_acceleration: 0,
+        y_acceleration: 0,
+        z_acceleration: 0,
+    })
+    const [isStillLoading, setIsStillLoading] = useState(false)
     //------------------------------------------------- PARSING DATA --------------------------------------------------------------------//
     const checksum_pc_generator = (packet:any) => {
         const sum = packet.reduce((acc:any, byte:any) => acc + byte, 0);
@@ -41,15 +49,8 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove})
             loadcell: (packet[11] << 8) | packet[12],
         };
         setBatteryTemperature(sensor.temperature)
-        if(listActuator[currentMove] ==  1){
-            let random_w = Math.random() * 0.9;
-            setLoadWeight(15+random_w)
-        }
-        else{
-            setLoadWeight(0)
-        }
+        setLoadWeight(sensor.loadcell)
         setBatteryCapacity(voltageToSoC((sensor.voltage)/100))
-        // console.log(sensor);
         return sensor;
     };
 
@@ -74,8 +75,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove})
             y_acceleration: parseValue(packet[11], packet[12]),
             z_acceleration: parseValue(packet[13], packet[14]),
         };
-    
-        // console.log(BNO08x);
+        setBNO055(BNO08x)
         return BNO08x;
     };
 
@@ -108,23 +108,27 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove})
             Vy,
             Vt
         };
-        setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
-        if(Math.round(KinematicData.Sx/100) <= 0 && Math.round(KinematicData.Sy/100) <= 0){
+        setCoordinate([Math.round(KinematicData.Sx),Math.round(KinematicData.Sy),BNO055.yaw])
+
+        // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
+        if(Math.round(KinematicData.Sx/100) <= 0 && Math.round(KinematicData.Sy/100) <= 0 && loadWeight <= 0){
             setStatus('Stand By')
+        }
+        else if(loadWeight > 0){
+            setStatus('On Load')
         }
         else{
             setStatus('Moving')
         }
-        // console.log(KinematicData);
         return KinematicData;
     }
 
     const voltageToSoC = (voltage:number) => {
         // This function should be based on the specific battery's voltage-SOC curve
         // Here we assume a linear relationship for simplicity
-        if (voltage >= 4.2*6) return 100;
+        if (voltage >= 4.0*6) return 100;
         if (voltage <= 3.0*6) return 0;
-        return parseFloat((((voltage - 3.0*6) / (4.2*6 - 3.0*6)) * 100).toFixed(2));
+        return parseFloat((((voltage - 3.0*6) / (4.0*6 - 3.0*6)) * 100).toFixed(2));
     };
 
     useEffect(()=>{
@@ -146,7 +150,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove})
                 {RightNav ?
                     <div className='text-center my-4'>
                         <p className='text-xs'>Battery Temperature</p>
-                        <p className='text-3xl font-bold mt-1'>{batteryTemperature/100 ? batteryTemperature/100 : 0} <span className='text-xs'>deg</span></p>
+                        <p className='text-3xl font-bold mt-1'>{batteryTemperature/100 ? (batteryTemperature/100).toFixed(2) : 0} <span className='text-xs'>deg</span></p>
                     </div>
                     :
                     null
@@ -164,7 +168,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove})
                 {RightNav ?
                     <div className='text-center my-4'>
                         <p className='text-xs'>Load Weight</p>
-                        <p className='text-3xl font-bold mt-1'>{loadWeight ? loadWeight : 0} <span className='text-xs'>kg</span></p>
+                        <p className='text-3xl font-bold mt-1'>{loadWeight.toFixed(2) ? loadWeight.toFixed(2) : 0} <span className='text-xs'>kg</span></p>
                     </div>
                     :
                     null

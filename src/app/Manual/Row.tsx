@@ -26,6 +26,8 @@ interface MemoRowProps {
   isStartSetting: boolean;
   setIsAuto: any;
   roboPos: any;
+  isRackSetting: any;
+  setRackCenter : any;
   setCoordinateSet: (x: number, y: number) => void;
   onSetGoal: (x: number, y: number) => void;
   onSetStart: (x: number, y: number) => void;
@@ -44,6 +46,8 @@ const MemoRow: React.FC<MemoRowProps> = ({
   isSetting,
   isGoalSetting,
   isStartSetting,
+  isRackSetting,
+  setRackCenter,
   setIsAuto,
   roboPos,
   setCoordinateSet,
@@ -101,6 +105,8 @@ const MemoRow: React.FC<MemoRowProps> = ({
               isStartSetting={isStartSetting}
               isGoalSetting={isGoalSetting}
               setIsAuto={setIsAuto}
+              isRackSetting={isRackSetting}
+              setRackCenter={setRackCenter}
               setCoordinateSet={setCoordinateSet}
               onSetStart={onSetStart}
               onSetGoal={onSetGoal}

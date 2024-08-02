@@ -56,6 +56,12 @@ const Astar = () => {
     const [withNeighbourEvaluation, setWithNeighbourEvaluation] = useState(true);
     const [cmdId, setCmdId] = useState(1);
 
+    const [isRackSetting, setIsRackSetting] = useState(false)
+    const [rackCenter, setRackCenter] = useState({
+        x: 0,
+        y: 0
+    })
+
     const { start, goal, setStart, setGoal, isStartSetting, isGoalSetting, setIsGoalSetting, setIsStartSetting } = useGoalAndStart();
     const { player, move, extendUserData } = usePlayer(start);
     const {
@@ -167,11 +173,22 @@ const Astar = () => {
             x: Math.round(Sy / 500) + offsetData.y,
             y: Math.round(Sx / 500) + offsetData.x
         }
-        // clearAll({ ...pos_data, ...extendUserData });
-        // console.log('kinematic data :',pos_data)
+
+        // Setting Rack position when bring load
+        if(listActuator[currentMove-1] == 1 && listActuator[currentMove] == 0){
+
+            // Delete last rack position
+            handleFreeRack(roboPos.x, roboPos.y)
+
+            // Add New rack position
+            handleSetRack(roboPos.x, roboPos.y)
+        }
+
+        // Setting New Robot Position
         setRoboPos(pos_data)
-        // setStart(pos_data)
-        // setIsStartSetting(false)
+
+        
+
         return KinematicData;
     }
 
@@ -356,31 +373,32 @@ const Astar = () => {
     useEffect(() => {
         if (isGoalReached(positionRef.current)) {
             if (!isFirst) {
-                console.log('first')
+                // console.log('first')
                 clearAll(start);
                 setIsFirst(true)
             }
             else if (isFirst && !isDistracted && !isNewGenerated) {
-                console.log('generate msg')
-                let msg = `A55A${(path.length-pathLength) + 1}|${goal.x}:${goal.y}|`
+                // console.log('generate msg')
+                let msg = `A55A${(path.length-pathLength) + 1}|${goal.x-offsetData.x}:${goal.y-offsetData.y}|`
                 path.slice(0,(path.length-pathLength)).map((step, i) => {
-                    if (((path.length-pathLength) - i) > 1) msg += `${step.x}:${step.y}|`
-                    else msg += `${step.x}:${step.y}FF`
+                    if (((path.length-pathLength) - i) > 1) msg += `${step.x-offsetData.x}:${step.y-offsetData.y}|`
+                    else msg += `${step.x-offsetData.x}:${step.y-offsetData.y}FF`
                 })
                 let lengthData = msg.split('|').length - 2
-                console.log(lengthData, (path.length-pathLength))
+                // console.log(lengthData, (path.length-pathLength))
                 if(msg.slice(-2) == 'FF' && (path.length-pathLength) == lengthData){
                     setPathLength(path.length);
                     setListMsg([...listMsg, msg]);
                     setStart(positionRef.current);
+                    console.log(msg)
                 }
                 setIsStartSequence(false);
             }
             else if(isDistracted){
-                let msg = `A55A${path.length + 1}|${goal.x}:${goal.y}|`
+                let msg = `A55A${path.length + 1}|${goal.x-offsetData.x}:${goal.y-offsetData.y}|`
                 path.map((step, i) => {
-                    if ((path.length - i) > 1) msg += `${step.x}:${step.y}|`
-                    else msg += `${step.x}:${step.y}FF`
+                    if ((path.length - i) > 1) msg += `${step.x-offsetData.x}:${step.y-offsetData.y}|`
+                    else msg += `${step.x-offsetData.x}:${step.y-offsetData.y}FF`
                 })
                 console.log(msg)
                 setMsgDistracted(msg)
@@ -399,8 +417,8 @@ const Astar = () => {
 
     useEffect(() => {
         if (isAuto && !isNewGenerated && !isDistracted) {
-            console.log(listMsg)
-            console.log(listActuator)
+            // console.log(listMsg)
+            // console.log(listActuator)
             clearAll(start);
             setGoal(coordinateSet)
             setListGoal([...listGoal, [coordinateSet.x, coordinateSet.y]])
@@ -532,9 +550,13 @@ const Astar = () => {
     }
 
     const onSetStart = (position: any) => {
-        clearAll({ ...position, ...extendUserData });
-        setStart(position)
-        setIsStartSetting(false)
+        setRoboPos({x:position.x,y:position.y})
+        setIsStartSetting(true);
+        setStart({x:position.x,y:position.y});
+        setIsStartSetting(false);
+        clearAll({ x:position.x,y:position.y, ...extendUserData })
+        setOffsetData({x:position.x,y:position.y})
+        console.log(position)
     }
     const onSetGoal = (position: any) => {
         setGoal(position)
@@ -545,12 +567,21 @@ const Astar = () => {
         setIsStartSetting(true);
         setIsSetting(false);
         setIsGoalSetting(false);
+        setIsRackSetting(false);
+    }
+
+    const editRackPosition = () => {
+        setIsStartSetting(false);
+        setIsSetting(false);
+        setIsGoalSetting(false);
+        setIsRackSetting(true);
     }
 
     const editGoalPosition = () => {
         setIsStartSetting(false);
         setIsSetting(false);
         setIsGoalSetting(true);
+        setIsRackSetting(false);
     }
 
 
@@ -560,6 +591,14 @@ const Astar = () => {
         // update map
         setBlockersBasedOnMapState(currentMap)
     }, [])
+
+    useEffect(() => {
+        // update map
+        if(isRackSetting){
+        handleSetRack(rackCenter.x,rackCenter.y)
+        setIsRackSetting(false);
+        }
+    }, [rackCenter])
 
     const handleAddBlock = (x: number, y: number) => {
         let newMap = currentMap
@@ -590,7 +629,7 @@ const Astar = () => {
         setBlockersBasedOnMapState(currentMap)
     }
 
-    const handleSetRackFree = (xcenter: number, ycenter: number) => {
+    const handleSetRack= (xcenter: number, ycenter: number) => {
         let newMap = currentMap
         newMap[xcenter - 1][ycenter + 1] = "#"
         newMap[xcenter][ycenter + 1] = "-"
@@ -601,6 +640,21 @@ const Astar = () => {
         newMap[xcenter - 1][ycenter - 1] = "#"
         newMap[xcenter][ycenter - 1] = "-"
         newMap[xcenter + 1][ycenter - 1] = "#"
+        setCurrentMap(newMap)
+        setBlockersBasedOnMapState(currentMap)
+    }
+
+    const handleFreeRack= (xcenter: number, ycenter: number) => {
+        let newMap = currentMap
+        newMap[xcenter - 1][ycenter + 1] = "-"
+        newMap[xcenter][ycenter + 1] = "-"
+        newMap[xcenter + 1][ycenter + 1] = "-"
+        newMap[xcenter - 1][ycenter] = "-"
+        newMap[xcenter][ycenter] = "-"
+        newMap[xcenter + 1][ycenter] = "-"
+        newMap[xcenter - 1][ycenter - 1] = "-"
+        newMap[xcenter][ycenter - 1] = "-"
+        newMap[xcenter + 1][ycenter - 1] = "-"
         setCurrentMap(newMap)
         setBlockersBasedOnMapState(currentMap)
     }
@@ -672,6 +726,8 @@ const Astar = () => {
                                 isSetting={isSetting}
                                 isStartSetting={isStartSetting}
                                 isGoalSetting={isGoalSetting}
+                                isRackSetting={isRackSetting}
+                                setRackCenter={setRackCenter}
                                 setIsAuto={setIsAuto}
                                 setCoordinateSet={setCoordinateSet}
                                 onSetStart={onSetStart}
@@ -684,7 +740,8 @@ const Astar = () => {
                         <button className={`px-6 py-1.5 ${isSubed ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttSub}><MdGetApp /><span className='ml-1'>{isSubed ? 'Subscribed' : 'Subscribe'}</span></button>
                         <button className={`px-6 py-1.5 ${isMoving ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={() => setIsMoving(true)}><IoMdMove /><span className='ml-1'>move</span></button>
                         <button className={`px-6 py-1.5 ${isStartSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isStartSetting} onClick={editStartPosition}><HiCursorArrowRays /><span className='ml-1'>set start</span></button>
-                        <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays /><span className='ml-1'>set goal</span></button>
+                        <button className={`px-6 py-1.5 ${isRackSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isRackSetting} onClick={editRackPosition}><HiCursorArrowRays /><span className='ml-1'>set Rack</span></button>
+                        {/* <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays /><span className='ml-1'>set goal</span></button> */}
                         <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={handleLift}><MdForklift /><span className='ml-1'>Lift Load</span></button>
                     </div>
                 </div>

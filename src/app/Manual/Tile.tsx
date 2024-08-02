@@ -14,6 +14,8 @@ interface MemoTileProps {
   isStartSetting: boolean;
   setIsAuto: any;
   setCoordinateSet: any;
+  isRackSetting: any;
+  setRackCenter: any;
   onSetStart: any;
   onSetGoal: any;
   isRoboPos: boolean;
@@ -31,6 +33,8 @@ export const MemoTile: FC<MemoTileProps> = ({
   setTileAsBlocker,
   isSetting,
   isGoalSetting,
+  isRackSetting,
+  setRackCenter,
   isStartSetting,
   setIsAuto,
   setCoordinateSet,
@@ -54,14 +58,19 @@ export const MemoTile: FC<MemoTileProps> = ({
     if (isStartSetting) {
       onSetStart({ x: item.x, y: item.y });
     }
-    if (isGoalSetting) {
-      onSetGoal({ x: item.x, y: item.y });
+    else if(isRackSetting){
+      setRackCenter({ x: item.x, y: item.y })
     }
-    if (isSetting) {
+    else if(isSetting) {
       setTileAsBlocker({ x: item.x, y: item.y });
     }
-    setIsAuto(true)
-    setCoordinateSet({ x: item.x, y: item.y });
+    else{
+      setIsAuto(true)
+      setCoordinateSet({ x: item.x, y: item.y });
+    }
+
+    
+    
     
     return false;
   };
