@@ -28,6 +28,8 @@ interface MapProps {
   onSetGoal: any;
   onSetStart: any;
   setCoordinateSet: any;
+  isRackSetting:any;
+  setRackCenter : any;
   roboPos: any
 }
 
@@ -48,8 +50,10 @@ export const Map: React.FC<MapProps> = ({
   setCoordinateSet,
   roboPos,
   onSetGoal,
+  isRackSetting,
+  setRackCenter,
   onSetStart
-}) => {
+})  => {
   const rowsToRender = new Array(rows).fill(0);
 
   const getRowValue = (tiles: Tile[], index: number): Tile[] => {
@@ -61,25 +65,27 @@ export const Map: React.FC<MapProps> = ({
       {rowsToRender.map((_, index) => (
         <Row
         key={index}
-          x={index}
-          columns={columns}
-          blockers={getRowValue(blockers, index)}
-          open={getRowValue(open, index)}
-          road={getRowValue(road, index)}
-          path={getRowValue(path, index)}
-          goal={goal.x === index ? goal : 0}
-          userPosition={userPosition}
-          setTileAsBlocker={setTileAsBlocker}
-          isSetting={isSetting}
-          isStartSetting={isStartSetting}
-          isGoalSetting={isGoalSetting}
-          // custom params
-          roboPos={roboPos}
-          setIsAuto={setIsAuto}
-          setCoordinateSet={setCoordinateSet}
-          onSetStart={onSetStart}
-          onSetGoal={onSetGoal}
-        />
+        x={index}
+        columns={columns}
+        blockers={getRowValue(blockers, index)}
+        open={getRowValue(open, index)}
+        road={getRowValue(road, index)}
+        path={getRowValue(path, index)}
+        goal={goal.x === index ? goal : 0}
+        userPosition={userPosition}
+        setTileAsBlocker={setTileAsBlocker}
+        isSetting={isSetting}
+        isStartSetting={isStartSetting}
+        isGoalSetting={isGoalSetting}
+        isRackSetting={isRackSetting}
+        // custom params
+        roboPos={roboPos}
+        setIsAuto={setIsAuto}
+        setCoordinateSet={setCoordinateSet}
+        setRackCenter={setRackCenter}
+        onSetStart={onSetStart}
+        onSetGoal={onSetGoal}
+      />
       )).reverse()}
     </div>
   );

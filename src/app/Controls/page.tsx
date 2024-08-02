@@ -452,7 +452,7 @@ const Astar= () =>{
     return (
         <div className="Astar pt-32 flex flex-col justify-center items-center w-full">
             <LeftNav rxMsg={rxMsg} currentOrientation={currentOrientation} requestOrientation={requestOrientation} setRequestOrientation={setRequestOrientation} />
-            <RightNav rxMsg={rxMsg} />
+            {/* <RightNav rxMsg={rxMsg} /> */}
             <div className="Astar-header flex justify-center w-full">
 
                 <div className="Astar-content flex justify-center w-full">
