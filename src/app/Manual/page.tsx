@@ -131,6 +131,7 @@ const Astar = () => {
 
     // Offset Data
     const [offsetData, setOffsetData] = useState({x:0,y:0})
+    const [isOffset, setIsOffset] = useState(false)
 
     const [isRobotConnected, setIsRobotConnected] = useState(false)
     //-------------------------------------------------- PARSING DATA FUNCTION ---------------------------------------------------------------------//
@@ -170,19 +171,23 @@ const Astar = () => {
         };
         // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
         const pos_data = {
-            x: Math.round(Sy / 500) + offsetData.y,
-            y: Math.round(Sx / 500) + offsetData.x
+            x: Math.round(Sy / 500) + offsetData.x,
+            y: Math.round(Sx / 500) + offsetData.y
         }
-
+        // console.log(Math.round(Sy / 500),Math.round(Sx / 500))
+        // console.log(offsetData)
+        // console.log('all', listActuator)
+        // console.log('current move',currentMove )
+        // console.log('last actuator',listActuator[currentMove-1] )
         // Setting Rack position when bring load
-        if(listActuator[currentMove-1] == 1 && listActuator[currentMove] == 0){
+        // if(listActuator[currentMove-1] == 1){
 
-            // Delete last rack position
-            handleFreeRack(roboPos.x, roboPos.y)
+        //     // Delete last rack position
+        //     handleFreeRack(roboPos.x, roboPos.y)
 
-            // Add New rack position
-            handleSetRack(roboPos.x, roboPos.y)
-        }
+        //     // Add New rack position
+        //     handleSetRack(roboPos.x, roboPos.y)
+        // }
 
         // Setting New Robot Position
         setRoboPos(pos_data)
@@ -287,9 +292,9 @@ const Astar = () => {
     useEffect(() => {
         if (listGoal[currentMove] != undefined && currentMove != 0) {
             if (roboPos.x == listGoal[currentMove][0] && roboPos.y == listGoal[currentMove][1]) {
-                console.log('current act',listActuator[currentMove-1])
-                console.log('last act',(currentMove == 0 ? 0 : listActuator[currentMove - 2]))
-                console.log('move', currentMove)
+                // console.log('current act',listActuator[currentMove-1])
+                // console.log('last act',(currentMove == 0 ? 0 : listActuator[currentMove - 2]))
+                // console.log('move', currentMove)
 
                 if ((((currentMove == 0 ? 0 : listActuator[currentMove - 1]) != (currentMove == 0 ? 0 : listActuator[currentMove - 2]) && currentMove != 1) || (currentMove == 1 && listActuator[currentMove - 1] == 1))) {
                     if (listActuator[currentMove-1] == 1 && !isActuatorPlay) {
@@ -297,6 +302,7 @@ const Astar = () => {
                         let idcmd = decimalToHex(cmdId)
                         let msg = `AA55${idcmd}00000010000FF`
                         mqttPublish(msg)
+                        handleFreeRack(roboPos.x, roboPos.y)
                         setCmdId(cmdId + 1);
                         setIsActuatorPlay(true)
                         setMoveDelay(20000);
@@ -306,6 +312,7 @@ const Astar = () => {
                         let idcmd = decimalToHex(cmdId)
                         let msg = `AA55${idcmd}00000020000FF`
                         mqttPublish(msg)
+                        handleSetRack(roboPos.x, roboPos.y)
                         setCmdId(cmdId + 1);
                         setIsActuatorPlay(true)
                         setMoveDelay(20000);
@@ -315,8 +322,11 @@ const Astar = () => {
                     setIsMoving(true)
                     setIsActuatorPlay(false)
                 }
+
+
             }
         }
+        
 
     }, [roboPos])
 
@@ -555,12 +565,18 @@ const Astar = () => {
         setStart({x:position.x,y:position.y});
         setIsStartSetting(false);
         clearAll({ x:position.x,y:position.y, ...extendUserData })
-        setOffsetData({x:position.x,y:position.y})
-        console.log(position)
     }
     const onSetGoal = (position: any) => {
         setGoal(position)
         setIsGoalSetting(false);
+    }
+
+    const editOffsetPosition= () => {
+        setIsStartSetting(false);
+        setIsSetting(false);
+        setIsGoalSetting(false);
+        setIsRackSetting(false);
+        setIsOffset(true)
     }
 
     const editStartPosition = () => {
@@ -568,6 +584,7 @@ const Astar = () => {
         setIsSetting(false);
         setIsGoalSetting(false);
         setIsRackSetting(false);
+        setIsOffset(false)
     }
 
     const editRackPosition = () => {
@@ -575,6 +592,7 @@ const Astar = () => {
         setIsSetting(false);
         setIsGoalSetting(false);
         setIsRackSetting(true);
+        setIsOffset(false)
     }
 
     const editGoalPosition = () => {
@@ -582,6 +600,7 @@ const Astar = () => {
         setIsSetting(false);
         setIsGoalSetting(true);
         setIsRackSetting(false);
+        setIsOffset(false)
     }
 
 
@@ -591,6 +610,17 @@ const Astar = () => {
         // update map
         setBlockersBasedOnMapState(currentMap)
     }, [])
+
+    useEffect(() => {
+        if(isOffset){
+            setRoboPos({x:offsetData.x,y:offsetData.y})
+            setIsStartSetting(true);
+            setStart({x:offsetData.x,y:offsetData.y});
+            setIsStartSetting(false);
+            clearAll({ x:offsetData.x,y:offsetData.y, ...extendUserData })
+            setIsOffset(false)
+        }
+    }, [offsetData])
 
     useEffect(() => {
         // update map
@@ -630,6 +660,7 @@ const Astar = () => {
     }
 
     const handleSetRack= (xcenter: number, ycenter: number) => {
+        if(xcenter && ycenter){
         let newMap = currentMap
         newMap[xcenter - 1][ycenter + 1] = "#"
         newMap[xcenter][ycenter + 1] = "-"
@@ -642,21 +673,24 @@ const Astar = () => {
         newMap[xcenter + 1][ycenter - 1] = "#"
         setCurrentMap(newMap)
         setBlockersBasedOnMapState(currentMap)
+        }
     }
 
     const handleFreeRack= (xcenter: number, ycenter: number) => {
-        let newMap = currentMap
-        newMap[xcenter - 1][ycenter + 1] = "-"
-        newMap[xcenter][ycenter + 1] = "-"
-        newMap[xcenter + 1][ycenter + 1] = "-"
-        newMap[xcenter - 1][ycenter] = "-"
-        newMap[xcenter][ycenter] = "-"
-        newMap[xcenter + 1][ycenter] = "-"
-        newMap[xcenter - 1][ycenter - 1] = "-"
-        newMap[xcenter][ycenter - 1] = "-"
-        newMap[xcenter + 1][ycenter - 1] = "-"
-        setCurrentMap(newMap)
-        setBlockersBasedOnMapState(currentMap)
+        if(xcenter && ycenter ){
+            let newMap = currentMap
+            newMap[xcenter - 1][ycenter + 1] = "-"
+            newMap[xcenter][ycenter + 1] = "-"
+            newMap[xcenter + 1][ycenter + 1] = "-"
+            newMap[xcenter - 1][ycenter] = "-"
+            newMap[xcenter][ycenter] = "-"
+            newMap[xcenter + 1][ycenter] = "-"
+            newMap[xcenter - 1][ycenter - 1] = "-"
+            newMap[xcenter][ycenter - 1] = "-"
+            newMap[xcenter + 1][ycenter - 1] = "-"
+            setCurrentMap(newMap)
+            setBlockersBasedOnMapState(currentMap)
+        }
     }
 
     return (
@@ -730,6 +764,8 @@ const Astar = () => {
                                 setRackCenter={setRackCenter}
                                 setIsAuto={setIsAuto}
                                 setCoordinateSet={setCoordinateSet}
+                                setOffsetData={setOffsetData}
+                                isOffset={isOffset}
                                 onSetStart={onSetStart}
                                 onSetGoal={onSetGoal}
                             />
@@ -739,7 +775,7 @@ const Astar = () => {
                         <button className={`px-6 py-1.5 ${connectStatus == 'Connected' ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttConnect}><PiPlugsConnectedFill /><span className='ml-1'>{connectStatus}</span></button>
                         <button className={`px-6 py-1.5 ${isSubed ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttSub}><MdGetApp /><span className='ml-1'>{isSubed ? 'Subscribed' : 'Subscribe'}</span></button>
                         <button className={`px-6 py-1.5 ${isMoving ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={() => setIsMoving(true)}><IoMdMove /><span className='ml-1'>move</span></button>
-                        <button className={`px-6 py-1.5 ${isStartSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isStartSetting} onClick={editStartPosition}><HiCursorArrowRays /><span className='ml-1'>set start</span></button>
+                        <button className={`px-6 py-1.5 ${isOffset ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isOffset} onClick={editOffsetPosition}><HiCursorArrowRays /><span className='ml-1'>set start</span></button>
                         <button className={`px-6 py-1.5 ${isRackSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isRackSetting} onClick={editRackPosition}><HiCursorArrowRays /><span className='ml-1'>set Rack</span></button>
                         {/* <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays /><span className='ml-1'>set goal</span></button> */}
                         <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={handleLift}><MdForklift /><span className='ml-1'>Lift Load</span></button>

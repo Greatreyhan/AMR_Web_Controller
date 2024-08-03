@@ -14,6 +14,8 @@ interface MemoTileProps {
   isStartSetting: boolean;
   setIsAuto: any;
   setCoordinateSet: any;
+  setOffsetData : any;
+  isOffset: any,
   isRackSetting: any;
   setRackCenter: any;
   onSetStart: any;
@@ -38,6 +40,8 @@ export const MemoTile: FC<MemoTileProps> = ({
   isStartSetting,
   setIsAuto,
   setCoordinateSet,
+  setOffsetData,
+  isOffset,
   onSetStart,
   onSetGoal
 }) => {
@@ -57,20 +61,24 @@ export const MemoTile: FC<MemoTileProps> = ({
   const resolveClickBehaviour = () => {
     if (isStartSetting) {
       onSetStart({ x: item.x, y: item.y });
+      console.log('start')
+    }
+    else if(isOffset){
+      setOffsetData({ x: item.x, y: item.y })
+      console.log('offset')
     }
     else if(isRackSetting){
       setRackCenter({ x: item.x, y: item.y })
+      console.log('rack')
     }
     else if(isSetting) {
       setTileAsBlocker({ x: item.x, y: item.y });
     }
+
     else{
       setIsAuto(true)
       setCoordinateSet({ x: item.x, y: item.y });
     }
-
-    
-    
     
     return false;
   };
