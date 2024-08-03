@@ -49,7 +49,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove})
             loadcell: (packet[11] << 8) | packet[12],
         };
         setBatteryTemperature(sensor.temperature)
-        setLoadWeight(sensor.loadcell)
+        setLoadWeight(sensor.loadcell/100)
         setBatteryCapacity(voltageToSoC((sensor.voltage)/100))
         return sensor;
     };
@@ -111,7 +111,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove})
         setCoordinate([Math.round(KinematicData.Sx),Math.round(KinematicData.Sy),BNO055.yaw])
 
         // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
-        if(Math.round(KinematicData.Sx/100) <= 0 && Math.round(KinematicData.Sy/100) <= 0 && loadWeight <= 0){
+        if(Math.round(KinematicData.Sx/100) <= 0 && Math.round(KinematicData.Sy/100) <= 0 && loadWeight <= 100){
             setStatus('Stand By')
         }
         else if(loadWeight > 0){

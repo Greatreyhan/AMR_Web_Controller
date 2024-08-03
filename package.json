@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "antd": "^5.16.2",
+    "fs": "^0.0.1-security",
     "mqtt": "^5.5.2",
     "next": "14.1.4",
     "react": "^18",

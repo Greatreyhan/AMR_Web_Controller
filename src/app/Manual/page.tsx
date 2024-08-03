@@ -16,6 +16,7 @@ import { HiCursorArrowRays } from "react-icons/hi2";
 import { IoMdMove } from "react-icons/io";
 import { MdForklift } from "react-icons/md";
 import { MdOutlineSignalWifiOff ,MdOutlineSignalWifiStatusbar4Bar} from "react-icons/md";
+import { MdSaveAlt } from "react-icons/md";;
 
 import Card from './Card';
 
@@ -480,6 +481,10 @@ const Astar = () => {
                     parseFreeBlockByCurrentCoordinate(msg)
                     setIsDistracted(true)
                 }
+                else if (msg[4] == '2' && msg[5] == '3') {
+                    parseMappingCoordinate(msg)
+                    setIsDistracted(true)
+                }
                 if(!isRobotConnected){
                     setIsRobotConnected(true)
                 }
@@ -524,6 +529,32 @@ const Astar = () => {
         else{
             setIsNewGenerated(false)
         }
+        console.log('blocking coordinate : ', n);
+        console.log('Current position : ', positionRef.current);
+    }
+
+    const parseMappingCoordinate = (hexString: string) => {
+
+        const n = parseInt(hexString[6] + hexString[7])
+        const command = parseInt(hexString[8])
+        for (let i = 0; i < n * 6; i += 6) {
+
+            let posx = 0
+            if (hexString[9 + i] == 'N') posx = roboPos.y - parseInt(hexString[10 + i] + hexString[11 + i])
+            else if (hexString[9 + i] == 'P') posx = roboPos.y + parseInt(hexString[10 + i] + hexString[11 + i])
+            let posy = 0
+            if (hexString[12 + i] == 'N') posy = roboPos.x - parseInt(hexString[13 + i] + hexString[14 + i])
+            else if (hexString[12 + i] == 'P') posy = roboPos.x + parseInt(hexString[13 + i] + hexString[14 + i])
+            console.log('coordinate :', posx, posy, i)
+            handleAddBlock(posy, posx)
+        }
+
+        // if (command == 1) {
+        //     setIsNewGenerated(true)
+        // }
+        // else{
+        //     setIsNewGenerated(false)
+        // }
         console.log('blocking coordinate : ', n);
         console.log('Current position : ', positionRef.current);
     }
@@ -693,6 +724,10 @@ const Astar = () => {
         }
     }
 
+    const handleSaveMap = ()=>{
+        console.log(currentMap)
+    }
+
     return (
         <div className="Astar pt-32 flex flex-col justify-center items-center w-full">
             {showCard ?
@@ -771,7 +806,7 @@ const Astar = () => {
                             />
                         </div>
                     </div>
-                    <div className="flex flex-row gap-5 justify-center fixed bottom-0 z-30 w-10/12 rounded-t-lg bg-slate-900 py-4">
+                    <div className="flex flex-row gap-5 justify-center fixed bottom-0 z-30 w-11/12 rounded-t-lg bg-slate-900 py-4">
                         <button className={`px-6 py-1.5 ${connectStatus == 'Connected' ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttConnect}><PiPlugsConnectedFill /><span className='ml-1'>{connectStatus}</span></button>
                         <button className={`px-6 py-1.5 ${isSubed ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={mqttSub}><MdGetApp /><span className='ml-1'>{isSubed ? 'Subscribed' : 'Subscribe'}</span></button>
                         <button className={`px-6 py-1.5 ${isMoving ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={() => setIsMoving(true)}><IoMdMove /><span className='ml-1'>move</span></button>
@@ -779,6 +814,7 @@ const Astar = () => {
                         <button className={`px-6 py-1.5 ${isRackSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isRackSetting} onClick={editRackPosition}><HiCursorArrowRays /><span className='ml-1'>set Rack</span></button>
                         {/* <button className={`px-6 py-1.5 ${isGoalSetting ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} disabled={isGoalSetting} onClick={editGoalPosition}><HiCursorArrowRays /><span className='ml-1'>set goal</span></button> */}
                         <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={handleLift}><MdForklift /><span className='ml-1'>Lift Load</span></button>
+                        <button className={`px-6 py-1.5 ${isLift ? 'bg-teal-500' : 'bg-amber-800'} uppercase font-semibold rounded flex items-center`} onClick={handleSaveMap}><MdSaveAlt /><span className='ml-1'>Save Map</span></button>
                     </div>
                 </div>
 

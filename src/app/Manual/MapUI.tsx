@@ -28,6 +28,8 @@ interface MapProps {
   onSetGoal: any;
   onSetStart: any;
   setCoordinateSet: any;
+  setOffsetData: any;
+  isOffset: any,
   isRackSetting:any;
   setRackCenter : any;
   roboPos: any
@@ -48,6 +50,8 @@ export const Map: React.FC<MapProps> = ({
   isStartSetting,
   setIsAuto,
   setCoordinateSet,
+  setOffsetData,
+  isOffset,
   roboPos,
   onSetGoal,
   isRackSetting,
@@ -64,27 +68,29 @@ export const Map: React.FC<MapProps> = ({
     <div className="">
       {rowsToRender.map((_, index) => (
         <Row
-        key={index}
-        x={index}
-        columns={columns}
-        blockers={getRowValue(blockers, index)}
-        open={getRowValue(open, index)}
-        road={getRowValue(road, index)}
-        path={getRowValue(path, index)}
-        goal={goal.x === index ? goal : 0}
-        userPosition={userPosition}
-        setTileAsBlocker={setTileAsBlocker}
-        isSetting={isSetting}
-        isStartSetting={isStartSetting}
-        isGoalSetting={isGoalSetting}
-        isRackSetting={isRackSetting}
-        // custom params
-        roboPos={roboPos}
-        setIsAuto={setIsAuto}
-        setCoordinateSet={setCoordinateSet}
-        setRackCenter={setRackCenter}
-        onSetStart={onSetStart}
-        onSetGoal={onSetGoal}
+          key={index}
+          x={index}
+          columns={columns}
+          blockers={getRowValue(blockers, index)}
+          open={getRowValue(open, index)}
+          road={getRowValue(road, index)}
+          path={getRowValue(path, index)}
+          goal={goal.x === index ? goal : 0}
+          userPosition={userPosition}
+          setTileAsBlocker={setTileAsBlocker}
+          isSetting={isSetting}
+          isStartSetting={isStartSetting}
+          isGoalSetting={isGoalSetting}
+          isRackSetting={isRackSetting}
+          // custom params
+          roboPos={roboPos}
+          setIsAuto={setIsAuto}
+          setCoordinateSet={setCoordinateSet}
+          setOffsetData={setOffsetData}
+          isOffset={isOffset}
+          setRackCenter={setRackCenter}
+          onSetStart={onSetStart}
+          onSetGoal={onSetGoal}
       />
       )).reverse()}
     </div>
