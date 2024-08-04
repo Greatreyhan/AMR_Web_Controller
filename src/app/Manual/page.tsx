@@ -129,6 +129,7 @@ const Astar = () => {
     const [isActuatorPlay, setIsActuatorPlay] = useState(false)
     const [blockerNew, setBlockerNew] = useState('')
     const [pathLength, setPathLength] = useState(0);
+    const [mappingMsg, setMappingMsg] = useState('')
 
     // Offset Data
     const [offsetData, setOffsetData] = useState({x:0,y:0})
@@ -172,25 +173,9 @@ const Astar = () => {
         };
         // setCoordinate([Math.round(KinematicData.Sx/100),Math.round(KinematicData.Sy/100),Math.round(KinematicData.St/100)])
         const pos_data = {
-            x: Math.round(Sy / 500) + offsetData.x,
-            y: Math.round(Sx / 500) + offsetData.y
+            x: Math.round(Sy / 6) + offsetData.x,
+            y: Math.round(Sx / 6) + offsetData.y
         }
-        // console.log(Math.round(Sy / 500),Math.round(Sx / 500))
-        // console.log(offsetData)
-        // console.log('all', listActuator)
-        // console.log('current move',currentMove )
-        // console.log('last actuator',listActuator[currentMove-1] )
-        // Setting Rack position when bring load
-        // if(listActuator[currentMove-1] == 1){
-
-        //     // Delete last rack position
-        //     handleFreeRack(roboPos.x, roboPos.y)
-
-        //     // Add New rack position
-        //     handleSetRack(roboPos.x, roboPos.y)
-        // }
-
-        // Setting New Robot Position
         setRoboPos(pos_data)
 
         
@@ -482,8 +467,9 @@ const Astar = () => {
                     setIsDistracted(true)
                 }
                 else if (msg[4] == '2' && msg[5] == '3') {
-                    parseMappingCoordinate(msg)
-                    setIsDistracted(true)
+                    setMappingMsg(msg)
+                    // parseMappingCoordinate(msg)
+                    // setIsDistracted(true)
                 }
                 if(!isRobotConnected){
                     setIsRobotConnected(true)
@@ -498,6 +484,10 @@ const Astar = () => {
     // ---------------------------------------------------- PARSE INTERRUPTER MSG ------------------------------------------------------------------------//
     // ---------------------------------------------------------------------------------------------------------------------------------------------------//
 
+
+    useEffect(()=>{
+        parseMappingCoordinate(mappingMsg)
+    },[mappingMsg])
 
     const parseBlockerByCurrentCoordinate = (hexString: string) => {
 
@@ -556,7 +546,7 @@ const Astar = () => {
         //     setIsNewGenerated(false)
         // }
         console.log('blocking coordinate : ', n);
-        console.log('Current position : ', positionRef.current);
+        console.log('Current position : ', roboPos);
     }
 
     const decimalToHex = (n: number) => {
@@ -766,12 +756,6 @@ const Astar = () => {
                     <span className='text-red-500 h-5 w-5'><MdOutlineSignalWifiOff /></span><p className='ml-2 text-sm font-semibold '>Robot Disconnected</p>
                     </div>
                     }
-
-                    {/* {listMsg[1] ?
-                        listMsg.map((list,i)=>{
-                            return(<p className='text-xs' key={i}>{list}</p>)
-                        })
-                    :null} */}
                     
                 </div>
             </div>    
