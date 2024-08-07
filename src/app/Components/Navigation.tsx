@@ -34,8 +34,8 @@ const Navigation = () => {
                 <Link className="block mt-4 mr-10 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Logs">
                     Logs
                 </Link>
-                <Link className="block mt-4 mr-10 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Manual">
-                    Manual
+                <Link className="block mt-4 mr-10 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Auto">
+                    Auto
                 </Link>
                 <Link className="block mt-4 text-yellow-400 lg:inline-block lg:mt-0 hover:text-yellow-300 text-opacity-70 hover:text-opacity-90" href="/Connection">
                     Connection
