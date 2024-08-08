@@ -49,7 +49,7 @@ const RightNav: React.FC<RightNavProps> = ({ rxMsg , listActuator, currentMove})
             loadcell: (packet[11] << 8) | packet[12],
         };
         // const rnd_t = 29 + (Math.random() * (0.8 - 0.5) + 0.5);
-        setBatteryTemperature(sensor.temperature)
+        setBatteryTemperature((sensor.temperature-8000)/10)
         setLoadWeight(sensor.loadcell/100)
         setBatteryCapacity(voltageToSoC((sensor.voltage)/100))
         return sensor;
